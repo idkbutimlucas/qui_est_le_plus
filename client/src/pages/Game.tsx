@@ -47,8 +47,8 @@ export default function Game() {
   }, [currentResult, navigate]);
 
   const handleVote = (playerId: string) => {
-    // Permettre de changer son vote tant que tout le monde n'a pas voté
-    if (playerId !== socket?.id && !currentResult) {
+    // Permettre de changer son vote tant que tout le monde n'a pas voté (même pour soi-même)
+    if (!currentResult) {
       setSelectedPlayerId(playerId);
       vote(playerId);
       setHasVoted(true);
@@ -107,12 +107,10 @@ export default function Game() {
               <button
                 key={player.id}
                 onClick={() => handleVote(player.id)}
-                disabled={isCurrentPlayer || !!currentResult}
+                disabled={!!currentResult}
                 className={`
                   relative p-4 rounded-2xl transition-all transform
-                  ${isCurrentPlayer
-                    ? 'bg-gray-200 border-4 border-gray-400 cursor-not-allowed'
-                    : isSelected
+                  ${isSelected
                     ? 'bg-gradient-to-br from-green-400 to-emerald-500 border-4 border-white scale-105 shadow-2xl'
                     : 'bg-white border-4 border-purple-300 hover:scale-105 hover:shadow-xl cursor-pointer'
                   }
