@@ -10,14 +10,12 @@ export default function Home() {
   const { room, createRoom, joinRoom, error, clearError } = useSocket();
   const navigate = useNavigate();
 
-  // Naviguer vers le lobby quand la room est créée/rejointe
   useEffect(() => {
     if (room) {
       navigate('/lobby');
     }
   }, [room, navigate]);
 
-  // Nettoyer l'erreur quand on change de mode
   useEffect(() => {
     clearError();
   }, [mode, clearError]);
@@ -25,18 +23,15 @@ export default function Home() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Compresser l'image avant de la sauvegarder
       const reader = new FileReader();
       reader.onloadend = () => {
         const img = new Image();
         img.onload = () => {
-          // Créer un canvas pour redimensionner l'image
           const canvas = document.createElement('canvas');
-          const MAX_SIZE = 200; // Taille max en pixels
+          const MAX_SIZE = 200;
           let width = img.width;
           let height = img.height;
 
-          // Redimensionner en gardant le ratio
           if (width > height) {
             if (width > MAX_SIZE) {
               height = (height * MAX_SIZE) / width;
@@ -54,7 +49,6 @@ export default function Home() {
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
 
-          // Convertir en base64 avec compression
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
           setAvatarPreview(compressedBase64);
         };
@@ -77,86 +71,98 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
       <div className="max-w-md w-full">
-        {/* Titre principal */}
-        <h1 className="text-6xl font-playful text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 drop-shadow-lg">
-          QUI EST LE +
-        </h1>
-        <p className="text-center text-gray-600 mb-8 font-cartoon text-lg">
-          Le jeu pour mieux se connaître (ou pas) 😄
-        </p>
+        {/* Titre principal avec logo */}
+        <div className="text-center mb-8">
+          <div className="inline-block mb-4">
+            <img src="/logo.png" alt="Logo" className="w-32 h-32 mx-auto" />
+          </div>
+          <h1 className="text-6xl font-bold mb-3 text-black font-grotesk">
+            QUI EST LE +
+          </h1>
+          <p className="text-gray-600 text-lg font-medium font-sans">
+            Le jeu pour mieux se connaître
+          </p>
+        </div>
 
         {/* Menu principal */}
         {mode === 'menu' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-4 border-4 border-purple-300">
+          <div className="glass-card rounded-2xl p-6 space-y-4">
             <button
               onClick={() => setMode('create')}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-cartoon text-xl py-4 px-6 rounded-2xl hover:scale-105 transform transition shadow-lg hover:shadow-xl"
+              className="w-full bg-black hover:bg-gray-800 text-white font-semibold text-lg py-4 px-6 rounded-xl transition-all duration-200 font-grotesk"
             >
-              🎮 Créer une partie
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-xl">+</span>
+                <span>Créer une partie</span>
+              </div>
             </button>
             <button
               onClick={() => setMode('join')}
-              className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-cartoon text-xl py-4 px-6 rounded-2xl hover:scale-105 transform transition shadow-lg hover:shadow-xl"
+              className="w-full bg-white hover:bg-gray-50 text-black border border-gray-300 font-semibold text-lg py-4 px-6 rounded-xl transition-all duration-200 font-grotesk"
             >
-              🚀 Rejoindre une partie
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-xl">→</span>
+                <span>Rejoindre une partie</span>
+              </div>
             </button>
           </div>
         )}
 
         {/* Créer une room */}
         {mode === 'create' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6 border-4 border-purple-300">
+          <div className="glass-card rounded-2xl p-6 space-y-5">
             <button
               onClick={() => {
                 setMode('menu');
                 clearError();
               }}
-              className="text-gray-500 hover:text-gray-700 font-cartoon"
+              className="text-gray-700 hover:text-black font-medium font-sans flex items-center gap-2 transition-all"
             >
-              ← Retour
+              <span className="text-lg">←</span>
+              <span>Retour</span>
             </button>
 
-            <h2 className="text-3xl font-playful text-purple-600 text-center">
+            <h2 className="text-3xl font-bold text-black text-center font-grotesk">
               Créer une partie
             </h2>
 
             {error && (
-              <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-xl font-cartoon">
+              <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl font-medium font-sans">
                 {error}
               </div>
             )}
 
-            <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-medium font-sans text-sm">
                 Ton nom
               </label>
               <input
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 font-cartoon text-lg"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-sans text-black placeholder-gray-400 transition-all"
                 placeholder="Entre ton nom..."
                 maxLength={20}
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-medium font-sans text-sm">
                 Ta photo (optionnel)
               </label>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-3">
                 {avatarPreview && (
                   <img
                     src={avatarPreview}
                     alt="Avatar"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-300"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-black"
                   />
                 )}
-                <label className="flex-1 bg-purple-100 border-2 border-purple-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:bg-purple-200 transition">
-                  <span className="font-cartoon text-purple-600">
-                    📸 {avatarPreview ? 'Changer' : 'Ajouter'} une photo
+                <label className="flex-1 bg-white border border-gray-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:border-black transition-all">
+                  <span className="font-medium text-gray-700 font-sans text-sm">
+                    {avatarPreview ? 'Changer la photo' : 'Ajouter une photo'}
                   </span>
                   <input
                     type="file"
@@ -171,79 +177,80 @@ export default function Home() {
             <button
               onClick={handleCreateRoom}
               disabled={!playerName.trim()}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-cartoon text-xl py-4 px-6 rounded-2xl hover:scale-105 transform transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-lg py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
             >
-              🎮 Créer la partie
+              Créer la partie
             </button>
           </div>
         )}
 
         {/* Rejoindre une room */}
         {mode === 'join' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6 border-4 border-orange-300">
+          <div className="glass-card rounded-2xl p-6 space-y-5">
             <button
               onClick={() => {
                 setMode('menu');
                 clearError();
               }}
-              className="text-gray-500 hover:text-gray-700 font-cartoon"
+              className="text-gray-700 hover:text-black font-medium font-sans flex items-center gap-2 transition-all"
             >
-              ← Retour
+              <span className="text-lg">←</span>
+              <span>Retour</span>
             </button>
 
-            <h2 className="text-3xl font-playful text-orange-600 text-center">
+            <h2 className="text-3xl font-bold text-black text-center font-grotesk">
               Rejoindre une partie
             </h2>
 
             {error && (
-              <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-xl font-cartoon">
+              <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl font-medium font-sans">
                 {error}
               </div>
             )}
 
-            <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-medium font-sans text-sm">
                 Code de la partie
               </label>
               <input
                 type="text"
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-3 border-2 border-orange-300 rounded-xl focus:outline-none focus:border-orange-500 font-cartoon text-lg uppercase text-center tracking-widest"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-mono text-2xl font-bold uppercase text-center tracking-widest text-black placeholder-gray-400 transition-all"
                 placeholder="ABC123"
                 maxLength={6}
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-medium font-sans text-sm">
                 Ton nom
               </label>
               <input
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-orange-300 rounded-xl focus:outline-none focus:border-orange-500 font-cartoon text-lg"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-sans text-black placeholder-gray-400 transition-all"
                 placeholder="Entre ton nom..."
                 maxLength={20}
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-medium font-sans text-sm">
                 Ta photo (optionnel)
               </label>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-3">
                 {avatarPreview && (
                   <img
                     src={avatarPreview}
                     alt="Avatar"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-orange-300"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-black"
                   />
                 )}
-                <label className="flex-1 bg-orange-100 border-2 border-orange-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:bg-orange-200 transition">
-                  <span className="font-cartoon text-orange-600">
-                    📸 {avatarPreview ? 'Changer' : 'Ajouter'} une photo
+                <label className="flex-1 bg-white border border-gray-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:border-black transition-all">
+                  <span className="font-medium text-gray-700 font-sans text-sm">
+                    {avatarPreview ? 'Changer la photo' : 'Ajouter une photo'}
                   </span>
                   <input
                     type="file"
@@ -258,9 +265,9 @@ export default function Home() {
             <button
               onClick={handleJoinRoom}
               disabled={!playerName.trim() || !roomCode.trim()}
-              className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-cartoon text-xl py-4 px-6 rounded-2xl hover:scale-105 transform transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-lg py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
             >
-              🚀 Rejoindre
+              Rejoindre
             </button>
           </div>
         )}

@@ -9,8 +9,18 @@ export default function Lobby() {
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
   const [selectedCategories, setSelectedCategories] = useState<QuestionCategory[]>(['classique']);
+  const [showCode, setShowCode] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
+
+  const copyCode = () => {
+    if (room) {
+      navigator.clipboard.writeText(room.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (!room) {
@@ -18,11 +28,9 @@ export default function Lobby() {
       return;
     }
 
-    // Mettre à jour les settings locaux quand la room change
     setNumberOfQuestions(room.settings.numberOfQuestions);
     setSelectedCategories(room.settings.categories as QuestionCategory[]);
 
-    // Rediriger vers le jeu si le jeu démarre
     if (room.status === 'playing') {
       navigate('/game');
     }
@@ -67,65 +75,134 @@ export default function Lobby() {
 
   const categories: QuestionCategory[] = ['soft', 'classique', 'humour-noir', 'hard', 'politiquement-incorrect'];
 
-  const categoryColors: Record<QuestionCategory, string> = {
-    'soft': 'bg-green-100 border-green-400 text-green-700',
-    'classique': 'bg-blue-100 border-blue-400 text-blue-700',
-    'humour-noir': 'bg-gray-100 border-gray-400 text-gray-700',
-    'hard': 'bg-red-100 border-red-400 text-red-700',
-    'politiquement-incorrect': 'bg-yellow-100 border-yellow-400 text-yellow-700',
+  const categoryColors: Record<QuestionCategory, { bg: string; border: string; text: string; gradient: string }> = {
+    'soft': {
+      bg: 'bg-gradient-to-r from-green-400 to-emerald-500',
+      border: 'border-green-400',
+      text: 'text-white',
+      gradient: 'from-green-400 to-emerald-500'
+    },
+    'classique': {
+      bg: 'bg-gradient-to-r from-blue-400 to-cyan-500',
+      border: 'border-blue-400',
+      text: 'text-white',
+      gradient: 'from-blue-400 to-cyan-500'
+    },
+    'humour-noir': {
+      bg: 'bg-gradient-to-r from-slate-400 to-slate-600',
+      border: 'border-slate-400',
+      text: 'text-white',
+      gradient: 'from-slate-400 to-slate-600'
+    },
+    'hard': {
+      bg: 'bg-gradient-to-r from-red-400 to-rose-500',
+      border: 'border-red-400',
+      text: 'text-white',
+      gradient: 'from-red-400 to-rose-500'
+    },
+    'politiquement-incorrect': {
+      bg: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+      border: 'border-yellow-400',
+      text: 'text-white',
+      gradient: 'from-yellow-400 to-orange-500'
+    },
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
+      <div className="max-w-5xl w-full">
         {/* En-tête */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6 mb-4 border-4 border-purple-300">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-playful text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+        <div className="glass-card rounded-3xl p-6 mb-6">
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <div className="flex-1">
+              <h1 className="text-5xl font-bold text-black mb-4 font-grotesk">
                 Lobby
               </h1>
-              <p className="text-gray-600 font-cartoon mt-1">
-                Code de la partie : <span className="font-bold text-2xl text-purple-600">{room.code}</span>
-              </p>
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-gray-700 font-medium font-sans">
+                  Code de la partie :
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-3xl text-black font-mono tracking-widest">
+                    {showCode ? room.code : '••••••'}
+                  </span>
+
+                  {/* Bouton afficher/cacher */}
+                  <button
+                    onClick={() => setShowCode(!showCode)}
+                    className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
+                    title={showCode ? 'Cacher le code' : 'Afficher le code'}
+                  >
+                    {showCode ? '👁️' : '👁️‍🗨️'}
+                  </button>
+
+                  {/* Bouton copier */}
+                  <button
+                    onClick={copyCode}
+                    className={`font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm ${
+                      copied
+                        ? 'bg-black text-white'
+                        : 'bg-black hover:bg-gray-800 text-white'
+                    }`}
+                    title="Copier le code"
+                  >
+                    <div className="flex items-center gap-2">
+                      {copied ? (
+                        <>
+                          <span>✓</span>
+                          <span>Copié !</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>📋</span>
+                          <span>Copier</span>
+                        </>
+                      )}
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
             <button
               onClick={handleLeaveRoom}
-              className="bg-red-500 text-white font-cartoon py-2 px-4 rounded-xl hover:bg-red-600 transition"
+              className="bg-white hover:bg-gray-50 text-black border border-gray-300 font-semibold py-3 px-6 rounded-xl transition-all duration-200 font-grotesk"
             >
               Quitter
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Liste des joueurs */}
-          <div className="bg-white rounded-3xl shadow-2xl p-6 border-4 border-pink-300">
-            <h2 className="text-2xl font-playful text-pink-600 mb-4">
+          <div className="glass-card rounded-3xl p-6">
+            <h2 className="text-3xl font-bold text-black mb-6 font-grotesk">
               Joueurs ({room.players.length})
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {room.players.map((player) => (
                 <div
                   key={player.id}
-                  className="flex items-center space-x-3 bg-pink-50 p-3 rounded-xl border-2 border-pink-200"
+                  className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-300 transition-all duration-200"
                 >
                   {player.avatar ? (
-                    <img
-                      src={player.avatar}
-                      alt={player.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-pink-300"
-                    />
+                    <div className="relative">
+                      <img
+                        src={player.avatar}
+                        alt={player.name}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-black"
+                      />
+                    </div>
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center text-white font-bold text-2xl">
                       {player.name[0].toUpperCase()}
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-cartoon text-lg">{player.name}</p>
+                    <p className="font-semibold text-lg font-grotesk text-black">{player.name}</p>
                     {player.isHost && (
-                      <span className="text-xs bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full font-cartoon">
-                        👑 Hôte
+                      <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-800 border border-gray-300 px-3 py-1 rounded-full font-semibold font-sans">
+                        <span>👑</span>
+                        <span>Hôte</span>
                       </span>
                     )}
                   </div>
@@ -134,16 +211,16 @@ export default function Lobby() {
             </div>
           </div>
 
-          {/* Settings (visible seulement pour l'hôte) */}
-          <div className="bg-white rounded-3xl shadow-2xl p-6 border-4 border-orange-300">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-playful text-orange-600">
+          {/* Settings */}
+          <div className="glass-card rounded-3xl p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-black font-grotesk">
                 Paramètres
               </h2>
               {isHost && (
                 <button
                   onClick={() => setShowSettings(!showSettings)}
-                  className="text-sm bg-orange-500 text-white px-3 py-1 rounded-full font-cartoon hover:bg-orange-600 transition"
+                  className="text-sm bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full font-semibold transition-all duration-200 font-sans"
                 >
                   {showSettings ? 'Masquer' : 'Modifier'}
                 </button>
@@ -151,22 +228,32 @@ export default function Lobby() {
             </div>
 
             {/* Nombre de questions */}
-            <div className="mb-4">
-              <label className="block text-gray-700 font-cartoon mb-2">
-                Nombre de questions : <span className="font-bold text-orange-600">{numberOfQuestions}</span>
+            <div className="mb-6">
+              <label className="block text-gray-700 font-semibold mb-3 font-grotesk text-lg">
+                Nombre de questions : <span className="text-black">{numberOfQuestions}</span>
               </label>
               {isHost && showSettings ? (
-                <input
-                  type="range"
-                  min="5"
-                  max="30"
-                  step="5"
-                  value={numberOfQuestions}
-                  onChange={(e) => handleNumberOfQuestionsChange(parseInt(e.target.value))}
-                  className="w-full"
-                />
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min="5"
+                    max="30"
+                    step="5"
+                    value={numberOfQuestions}
+                    onChange={(e) => handleNumberOfQuestionsChange(parseInt(e.target.value))}
+                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 font-sans">
+                    <span>5</span>
+                    <span>10</span>
+                    <span>15</span>
+                    <span>20</span>
+                    <span>25</span>
+                    <span>30</span>
+                  </div>
+                </div>
               ) : (
-                <div className="bg-orange-100 px-4 py-2 rounded-xl border-2 border-orange-200 font-cartoon">
+                <div className="bg-white px-5 py-3 rounded-2xl border border-gray-300 font-semibold text-black font-sans">
                   {numberOfQuestions} questions
                 </div>
               )}
@@ -174,27 +261,29 @@ export default function Lobby() {
 
             {/* Catégories */}
             <div>
-              <label className="block text-gray-700 font-cartoon mb-2">
+              <label className="block text-gray-700 font-semibold mb-3 font-grotesk text-lg">
                 Catégories
               </label>
-              <div className="space-y-2">
+              <div className="space-y-3 max-h-64 overflow-y-auto">
                 {categories.map((category) => (
                   <div key={category}>
                     {isHost && showSettings ? (
                       <button
                         onClick={() => handleCategoryToggle(category)}
-                        className={`w-full px-4 py-2 rounded-xl border-2 font-cartoon transition ${
+                        className={`w-full px-5 py-3 rounded-2xl border font-semibold transition-all duration-200 font-sans ${
                           selectedCategories.includes(category)
-                            ? categoryColors[category]
-                            : 'bg-gray-50 border-gray-200 text-gray-400'
+                            ? 'bg-black text-white border-black'
+                            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                         }`}
                       >
-                        {selectedCategories.includes(category) ? '✓ ' : ''}
-                        {categoryLabels[category]}
+                        <div className="flex items-center justify-between">
+                          <span>{categoryLabels[category]}</span>
+                          {selectedCategories.includes(category) && <span className="text-lg">✓</span>}
+                        </div>
                       </button>
                     ) : (
                       selectedCategories.includes(category) && (
-                        <div className={`px-4 py-2 rounded-xl border-2 font-cartoon ${categoryColors[category]}`}>
+                        <div className="px-5 py-3 rounded-2xl border border-gray-300 font-semibold font-sans bg-gray-100 text-gray-800">
                           {categoryLabels[category]}
                         </div>
                       )
@@ -208,23 +297,34 @@ export default function Lobby() {
 
         {/* Bouton démarrer */}
         {isHost && (
-          <div className="mt-4 bg-white rounded-3xl shadow-2xl p-6 border-4 border-green-300">
+          <div className="glass-card rounded-3xl p-6">
             <button
               onClick={handleStartGame}
               disabled={room.players.length < 2}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-cartoon text-2xl py-4 px-6 rounded-2xl hover:scale-105 transform transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
             >
-              {room.players.length < 2
-                ? '⏳ En attente de joueurs... (minimum 2)'
-                : '🎮 Démarrer la partie !'}
+              <div className="flex items-center justify-center gap-3">
+                {room.players.length < 2 ? (
+                  <>
+                    <span className="text-3xl">⏳</span>
+                    <span>En attente de joueurs... (minimum 2)</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-3xl">🎮</span>
+                    <span>Démarrer la partie !</span>
+                  </>
+                )}
+              </div>
             </button>
           </div>
         )}
 
         {!isHost && (
-          <div className="mt-4 bg-white rounded-3xl shadow-2xl p-6 border-4 border-blue-300">
-            <p className="text-center text-gray-600 font-cartoon text-lg">
-              ⏳ En attente que l'hôte démarre la partie...
+          <div className="glass-card rounded-3xl p-6">
+            <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
+              <span className="text-3xl">⏳</span>
+              <span>En attente que l'hôte démarre la partie...</span>
             </p>
           </div>
         )}
