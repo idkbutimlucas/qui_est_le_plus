@@ -75,39 +75,6 @@ export default function Lobby() {
 
   const categories: QuestionCategory[] = ['soft', 'classique', 'humour-noir', 'hard', 'politiquement-incorrect'];
 
-  const categoryColors: Record<QuestionCategory, { bg: string; border: string; text: string; gradient: string }> = {
-    'soft': {
-      bg: 'bg-gradient-to-r from-green-400 to-emerald-500',
-      border: 'border-green-400',
-      text: 'text-white',
-      gradient: 'from-green-400 to-emerald-500'
-    },
-    'classique': {
-      bg: 'bg-gradient-to-r from-blue-400 to-cyan-500',
-      border: 'border-blue-400',
-      text: 'text-white',
-      gradient: 'from-blue-400 to-cyan-500'
-    },
-    'humour-noir': {
-      bg: 'bg-gradient-to-r from-slate-400 to-slate-600',
-      border: 'border-slate-400',
-      text: 'text-white',
-      gradient: 'from-slate-400 to-slate-600'
-    },
-    'hard': {
-      bg: 'bg-gradient-to-r from-red-400 to-rose-500',
-      border: 'border-red-400',
-      text: 'text-white',
-      gradient: 'from-red-400 to-rose-500'
-    },
-    'politiquement-incorrect': {
-      bg: 'bg-gradient-to-r from-yellow-400 to-orange-500',
-      border: 'border-yellow-400',
-      text: 'text-white',
-      gradient: 'from-yellow-400 to-orange-500'
-    },
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white">
       <div className="max-w-5xl w-full">

@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 
 export default function Game() {
-  const { room, currentQuestion, currentResult, socket, vote, nextQuestion } = useSocket();
+  const { room, currentQuestion, currentResult, socket, vote } = useSocket();
   const navigate = useNavigate();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
-
-  const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
 
   useEffect(() => {
     if (!room) {
@@ -38,7 +36,7 @@ export default function Game() {
   useEffect(() => {
     if (currentResult) {
       setTimeout(() => {
-        navigate('/results');
+        navigate('/vote-reveal');
       }, 500);
     }
   }, [currentResult, navigate]);

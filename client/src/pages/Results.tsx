@@ -59,20 +59,6 @@ export default function Results() {
     return '';
   };
 
-  const getGradient = (rank: number, votes: number) => {
-    if (rank === 1 && votes > 0) return 'from-blue-500 to-cyan-600';
-    if (rank === 2 && votes > 0) return 'from-slate-500 to-slate-600';
-    if (rank === 3 && votes > 0) return 'from-slate-600 to-slate-700';
-    return 'from-slate-700 to-slate-800';
-  };
-
-  const getRingColor = (rank: number, votes: number) => {
-    if (rank === 1 && votes > 0) return 'ring-blue-500';
-    if (rank === 2 && votes > 0) return 'ring-slate-500';
-    if (rank === 3 && votes > 0) return 'ring-slate-600';
-    return 'ring-slate-600';
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white">
       {/* Indicateur discret dans le coin */}
