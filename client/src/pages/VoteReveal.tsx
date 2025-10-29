@@ -12,8 +12,10 @@ interface VoteRevealItem {
 }
 
 export default function VoteReveal() {
-  const { room, currentResult, socket } = useSocket();
+  const { room, currentResult, socket, nextQuestion, backToLobby } = useSocket();
   const navigate = useNavigate();
+
+  const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
 
   const [countdown, setCountdown] = useState(3);
   const [isCountdownDone, setIsCountdownDone] = useState(false);
@@ -84,14 +86,15 @@ export default function VoteReveal() {
     }
   }, [revealedVotes, voteItems]);
 
-  // Transition vers Results
-  useEffect(() => {
-    if (isComplete) {
-      setTimeout(() => {
-        navigate('/results');
-      }, 3000);
-    }
-  }, [isComplete, navigate]);
+  const handleNextQuestion = () => {
+    nextQuestion();
+  };
+
+  const handleBackToLobby = () => {
+    backToLobby();
+  };
+
+  const isFinished = room?.status === 'finished';
 
   if (!room || !currentResult) {
     return null;
@@ -217,17 +220,63 @@ export default function VoteReveal() {
           </div>
         )}
 
-        {/* Message de fin */}
+        {/* Message de fin et boutons */}
         {isComplete && (
-          <div className="mt-8 text-center animate-scale-in">
-            <div className="glass-card rounded-2xl p-8 border-2 border-black">
+          <div className="mt-8 animate-scale-in space-y-4">
+            <div className="glass-card rounded-2xl p-8 border-2 border-black text-center">
               <p className="text-3xl font-bold text-black font-grotesk mb-2">
                 ✨ Tous les votes ont été révélés ! ✨
               </p>
               <p className="text-gray-600 font-medium font-sans">
-                Direction les résultats...
+                Que souhaitez-vous faire maintenant ?
               </p>
             </div>
+
+            {/* Boutons pour l'hôte */}
+            {isHost && (
+              <div className="glass-card rounded-3xl p-6">
+                {isFinished ? (
+                  <button
+                    onClick={handleBackToLobby}
+                    className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl">🔄</span>
+                      <span>Retour au lobby</span>
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNextQuestion}
+                    className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl">➡️</span>
+                      <span>Question suivante</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Message pour les non-hôtes */}
+            {!isHost && (
+              <div className="glass-card rounded-3xl p-6">
+                <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
+                  {isFinished ? (
+                    <>
+                      <span className="text-3xl">🎉</span>
+                      <span>Merci d'avoir joué !</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-3xl">⏳</span>
+                      <span>En attente que l'hôte lance la prochaine question...</span>
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
