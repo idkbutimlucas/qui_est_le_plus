@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 
 export default function Results() {
-  const { room, currentResult, socket } = useSocket();
+  const { room, currentResult, socket, nextQuestion, backToLobby } = useSocket();
   const navigate = useNavigate();
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
@@ -25,8 +25,12 @@ export default function Results() {
     }
   }, [room, navigate]);
 
-  const handleViewVoteReveal = () => {
-    navigate('/vote-reveal');
+  const handleNextQuestion = () => {
+    nextQuestion();
+  };
+
+  const handleBackToLobby = () => {
+    backToLobby();
   };
 
   if (!room || !currentResult) {
@@ -186,23 +190,44 @@ export default function Results() {
         {/* Boutons */}
         {isHost && (
           <div className="glass-card rounded-3xl p-6">
-            <button
-              onClick={handleViewVoteReveal}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
-            >
-              <div className="flex items-center justify-center gap-3">
-                <span className="text-3xl">🎭</span>
-                <span>Voir qui a voté pour qui</span>
-              </div>
-            </button>
+            {isFinished ? (
+              <button
+                onClick={handleBackToLobby}
+                className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-3xl">🔄</span>
+                  <span>Retour au lobby</span>
+                </div>
+              </button>
+            ) : (
+              <button
+                onClick={handleNextQuestion}
+                className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-3xl">➡️</span>
+                  <span>Question suivante</span>
+                </div>
+              </button>
+            )}
           </div>
         )}
 
         {!isHost && (
           <div className="glass-card rounded-3xl p-6">
             <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
-              <span className="text-3xl">⏳</span>
-              <span>En attente que l'hôte lance la révélation...</span>
+              {isFinished ? (
+                <>
+                  <span className="text-3xl">🎉</span>
+                  <span>Merci d'avoir joué !</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl">⏳</span>
+                  <span>En attente que l'hôte lance la prochaine question...</span>
+                </>
+              )}
             </p>
           </div>
         )}

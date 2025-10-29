@@ -36,7 +36,7 @@ export default function Game() {
   useEffect(() => {
     if (currentResult) {
       setTimeout(() => {
-        navigate('/results');
+        navigate('/vote-reveal');
       }, 500);
     }
   }, [currentResult, navigate]);
