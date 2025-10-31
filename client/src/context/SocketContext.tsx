@@ -17,6 +17,7 @@ interface SocketContextType {
   backToLobby: () => void;
   leaveRoom: () => void;
   kickPlayer: (playerId: string) => void;
+  regenerateCode: () => void;
   clearError: () => void;
 }
 
@@ -116,6 +117,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     socket?.emit('room:kickPlayer', playerId);
   };
 
+  const regenerateCode = () => {
+    socket?.emit('room:regenerateCode');
+  };
+
   const clearError = () => {
     setError(null);
   };
@@ -137,6 +142,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         backToLobby,
         leaveRoom,
         kickPlayer,
+        regenerateCode,
         clearError,
       }}
     >

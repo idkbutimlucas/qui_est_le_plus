@@ -134,6 +134,34 @@ export class RoomManager {
     return { room, kicked: true };
   }
 
+  // Régénérer le code d'une room (seulement par l'hôte)
+  regenerateCode(hostId: string): { room: Room | null; oldCode: string | null } {
+    const oldCode = this.playerRooms.get(hostId);
+    if (!oldCode) return { room: null, oldCode: null };
+
+    const room = this.rooms.get(oldCode);
+    if (!room || room.hostId !== hostId) return { room: null, oldCode: null };
+
+    // Générer un nouveau code unique
+    const newCode = this.generateRoomCode();
+
+    // Supprimer l'ancienne entrée dans la map des rooms
+    this.rooms.delete(oldCode);
+
+    // Mettre à jour le code de la room
+    room.code = newCode;
+
+    // Ajouter la room avec le nouveau code
+    this.rooms.set(newCode, room);
+
+    // Mettre à jour les associations joueur -> roomCode
+    room.players.forEach(player => {
+      this.playerRooms.set(player.id, newCode);
+    });
+
+    return { room, oldCode };
+  }
+
   // Mettre à jour les settings (seulement le host)
   updateSettings(playerId: string, settings: RoomSettings): Room | null {
     const roomCode = this.playerRooms.get(playerId);

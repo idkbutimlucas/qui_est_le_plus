@@ -4,7 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { QuestionCategory, categoryLabels } from '../types';
 
 export default function Lobby() {
-  const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer } = useSocket();
+  const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer, regenerateCode } = useSocket();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
@@ -17,6 +17,13 @@ export default function Lobby() {
   const handleKickPlayer = (playerId: string) => {
     if (window.confirm('Voulez-vous vraiment expulser ce joueur ?')) {
       kickPlayer(playerId);
+    }
+  };
+
+  const handleRegenerateCode = () => {
+    if (window.confirm('Voulez-vous vraiment générer un nouveau code ? L\'ancien code ne fonctionnera plus.')) {
+      regenerateCode();
+      setShowCode(true); // Afficher le nouveau code
     }
   };
 
@@ -135,6 +142,17 @@ export default function Lobby() {
                       )}
                     </div>
                   </button>
+
+                  {/* Bouton régénérer le code - visible uniquement pour l'hôte */}
+                  {isHost && (
+                    <button
+                      onClick={handleRegenerateCode}
+                      className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
+                      title="Générer un nouveau code"
+                    >
+                      🔄
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

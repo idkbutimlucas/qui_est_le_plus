@@ -59,6 +59,7 @@ export interface ClientToServerEvents {
   'room:updateSettings': (settings: RoomSettings) => void;
   'room:leave': () => void;
   'room:kickPlayer': (playerId: string) => void;
+  'room:regenerateCode': () => void;
   'game:start': () => void;
   'game:vote': (targetPlayerId: string) => void;
   'game:nextQuestion': () => void;

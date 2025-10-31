@@ -134,6 +134,33 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Régénérer le code de la room
+  socket.on('room:regenerateCode', () => {
+    try {
+      const { room, oldCode } = roomManager.regenerateCode(socket.id);
+      if (!room || !oldCode) {
+        socket.emit('room:error', 'Impossible de régénérer le code');
+        return;
+      }
+
+      // Faire quitter tous les joueurs de l'ancienne room socket
+      room.players.forEach(player => {
+        const playerSocket = io.sockets.sockets.get(player.id);
+        if (playerSocket) {
+          playerSocket.leave(oldCode);
+          playerSocket.join(room.code);
+        }
+      });
+
+      // Notifier tous les joueurs de la mise à jour avec le nouveau code
+      io.to(room.code).emit('room:updated', room);
+
+      console.log(`Code régénéré pour la room: ${oldCode} -> ${room.code}`);
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors de la régénération du code');
+    }
+  });
+
   // Démarrer le jeu
   socket.on('game:start', () => {
     try {
