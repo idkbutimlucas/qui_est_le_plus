@@ -97,6 +97,43 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Expulser un joueur
+  socket.on('room:kickPlayer', (playerIdToKick) => {
+    try {
+      const { room, kicked } = roomManager.kickPlayer(socket.id, playerIdToKick);
+      if (!room || !kicked) {
+        socket.emit('room:error', 'Impossible d\'expulser ce joueur');
+        return;
+      }
+
+      // Notifier le joueur expulsé
+      io.to(playerIdToKick).emit('room:kicked');
+
+      // Déconnecter le joueur expulsé de la room socket
+      const kickedSocket = io.sockets.sockets.get(playerIdToKick);
+      if (kickedSocket) {
+        kickedSocket.leave(room.code);
+      }
+
+      // Notifier tous les autres joueurs de la mise à jour
+      io.to(room.code).emit('room:updated', room);
+
+      console.log(`Joueur ${playerIdToKick} expulsé de la room ${room.code} par l'hôte`);
+
+      // Si le jeu est en cours, vérifier si tout le monde a voté
+      if (room.status === 'playing' && roomManager.hasEveryoneVoted(room.code)) {
+        const result = roomManager.calculateResults(room.code);
+        if (result) {
+          io.to(room.code).emit('room:updated', room);
+          io.to(room.code).emit('game:results', result);
+          console.log(`Résultats calculés après expulsion dans la room ${room.code}`);
+        }
+      }
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors de l\'expulsion du joueur');
+    }
+  });
+
   // Démarrer le jeu
   socket.on('game:start', () => {
     try {

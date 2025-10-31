@@ -4,7 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { QuestionCategory, categoryLabels } from '../types';
 
 export default function Lobby() {
-  const { room, socket, updateSettings, startGame, leaveRoom } = useSocket();
+  const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer } = useSocket();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
@@ -13,6 +13,12 @@ export default function Lobby() {
   const [copied, setCopied] = useState(false);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
+
+  const handleKickPlayer = (playerId: string) => {
+    if (window.confirm('Voulez-vous vraiment expulser ce joueur ?')) {
+      kickPlayer(playerId);
+    }
+  };
 
   const copyCode = () => {
     if (room) {
@@ -175,6 +181,16 @@ export default function Lobby() {
                       </span>
                     )}
                   </div>
+                  {/* Bouton d'expulsion - visible uniquement pour l'hôte et pas pour lui-même */}
+                  {isHost && !player.isHost && (
+                    <button
+                      onClick={() => handleKickPlayer(player.id)}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl transition-all duration-200 font-sans text-sm border border-red-200"
+                      title="Expulser ce joueur"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

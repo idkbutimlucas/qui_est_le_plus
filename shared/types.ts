@@ -46,6 +46,7 @@ export interface ServerToClientEvents {
   'room:updated': (room: Room) => void;
   'room:joined': (room: Room) => void;
   'room:error': (error: string) => void;
+  'room:kicked': () => void;
   'game:question': (question: Question) => void;
   'game:results': (result: QuestionResult) => void;
   'game:finished': (allResults: QuestionResult[]) => void;
@@ -57,6 +58,7 @@ export interface ClientToServerEvents {
   'room:join': (code: string, playerName: string, avatar?: string) => void;
   'room:updateSettings': (settings: RoomSettings) => void;
   'room:leave': () => void;
+  'room:kickPlayer': (playerId: string) => void;
   'game:start': () => void;
   'game:vote': (targetPlayerId: string) => void;
   'game:nextQuestion': () => void;

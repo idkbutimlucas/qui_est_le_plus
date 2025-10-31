@@ -105,6 +105,35 @@ export class RoomManager {
     return { room, shouldDelete: false };
   }
 
+  // Expulser un joueur (seulement par l'hôte)
+  kickPlayer(hostId: string, playerIdToKick: string): { room: Room | null; kicked: boolean } {
+    const roomCode = this.playerRooms.get(hostId);
+    if (!roomCode) return { room: null, kicked: false };
+
+    const room = this.rooms.get(roomCode);
+    if (!room || room.hostId !== hostId) return { room: null, kicked: false };
+
+    // Vérifier que le joueur à expulser existe et n'est pas l'hôte
+    const playerToKick = room.players.find(p => p.id === playerIdToKick);
+    if (!playerToKick || playerIdToKick === hostId) {
+      return { room: null, kicked: false };
+    }
+
+    // Utiliser la logique de leaveRoom pour retirer le joueur
+    room.players = room.players.filter(p => p.id !== playerIdToKick);
+    this.playerRooms.delete(playerIdToKick);
+
+    // Nettoyer les votes liés à ce joueur
+    delete room.votes[playerIdToKick];
+    Object.keys(room.votes).forEach(voterId => {
+      if (room.votes[voterId] === playerIdToKick) {
+        delete room.votes[voterId];
+      }
+    });
+
+    return { room, kicked: true };
+  }
+
   // Mettre à jour les settings (seulement le host)
   updateSettings(playerId: string, settings: RoomSettings): Room | null {
     const roomCode = this.playerRooms.get(playerId);

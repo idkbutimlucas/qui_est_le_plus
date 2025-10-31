@@ -16,6 +16,7 @@ interface SocketContextType {
   nextQuestion: () => void;
   backToLobby: () => void;
   leaveRoom: () => void;
+  kickPlayer: (playerId: string) => void;
   clearError: () => void;
 }
 
@@ -46,6 +47,14 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     newSocket.on('room:error', (error: string) => {
       setError(error);
+    });
+
+    newSocket.on('room:kicked', () => {
+      // Le joueur a été expulsé
+      setRoom(null);
+      setCurrentQuestion(null);
+      setCurrentResult(null);
+      setError('Vous avez été expulsé de la partie');
     });
 
     newSocket.on('game:question', (question: Question) => {
@@ -103,6 +112,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     setCurrentResult(null);
   };
 
+  const kickPlayer = (playerId: string) => {
+    socket?.emit('room:kickPlayer', playerId);
+  };
+
   const clearError = () => {
     setError(null);
   };
@@ -123,6 +136,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         nextQuestion,
         backToLobby,
         leaveRoom,
+        kickPlayer,
         clearError,
       }}
     >
