@@ -6,7 +6,8 @@ export type QuestionCategory =
   | 'classique'
   | 'humour-noir'
   | 'hard'
-  | 'politiquement-incorrect';
+  | 'politiquement-incorrect'
+  | 'custom';
 
 // Labels des catégories
 export const categoryLabels: Record<QuestionCategory, string> = {
@@ -14,7 +15,8 @@ export const categoryLabels: Record<QuestionCategory, string> = {
   'classique': 'Classique',
   'humour-noir': 'Humour Noir',
   'hard': 'Hard',
-  'politiquement-incorrect': 'Politiquement Incorrect'
+  'politiquement-incorrect': 'Politiquement Incorrect',
+  'custom': 'Personnalisé'
 };
 
 // Interface pour un joueur
@@ -60,5 +62,6 @@ export interface Room {
   currentQuestion?: Question;
   votes: Record<string, string>;
   results: QuestionResult[];
-  status: 'lobby' | 'playing' | 'results' | 'finished';
+  status: 'lobby' | 'custom-questions' | 'playing' | 'results' | 'finished';
+  customQuestions?: string[];
 }

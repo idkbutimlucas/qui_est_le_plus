@@ -1,6 +1,6 @@
 // Types partagés entre le client et le serveur
 
-export type QuestionCategory = 'soft' | 'classique' | 'humour-noir' | 'hard' | 'politiquement-incorrect';
+export type QuestionCategory = 'soft' | 'classique' | 'humour-noir' | 'hard' | 'politiquement-incorrect' | 'custom';
 
 export interface Player {
   id: string;
@@ -24,7 +24,8 @@ export interface Room {
   currentQuestion?: Question;
   votes: Record<string, string>; // playerId -> votedForPlayerId
   results: QuestionResult[];
-  status: 'lobby' | 'playing' | 'results' | 'finished';
+  status: 'lobby' | 'custom-questions' | 'playing' | 'results' | 'finished';
+  customQuestions?: string[]; // Adjectifs personnalisés saisis par les joueurs
 }
 
 export interface Question {
@@ -48,6 +49,7 @@ export interface ServerToClientEvents {
   'game:question': (question: Question) => void;
   'game:results': (result: QuestionResult) => void;
   'game:finished': (allResults: QuestionResult[]) => void;
+  'custom:questionsUpdated': (questions: string[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -59,4 +61,7 @@ export interface ClientToServerEvents {
   'game:vote': (targetPlayerId: string) => void;
   'game:nextQuestion': () => void;
   'game:backToLobby': () => void;
+  'custom:addQuestion': (adjective: string) => void;
+  'custom:removeQuestion': (index: number) => void;
+  'custom:startGame': () => void;
 }

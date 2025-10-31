@@ -1,7 +1,7 @@
 import { QuestionCategory } from '../../../shared/types.js';
 
 // Adjectifs par catégorie
-export const adjectives: Record<QuestionCategory, string[]> = {
+export const adjectives: Record<Exclude<QuestionCategory, 'custom'>, string[]> = {
   'soft': [
     'gentil',
     'drôle',
@@ -192,8 +192,11 @@ export function getRandomQuestions(
   const questions: Array<{ adjective: string; category: QuestionCategory }> = [];
   const availableAdjectives: Array<{ adjective: string; category: QuestionCategory }> = [];
 
+  // Filtrer les catégories personnalisées
+  const validCategories = categories.filter(cat => cat !== 'custom') as Exclude<QuestionCategory, 'custom'>[];
+
   // Collecter tous les adjectifs des catégories sélectionnées
-  categories.forEach(category => {
+  validCategories.forEach(category => {
     adjectives[category].forEach(adjective => {
       availableAdjectives.push({ adjective, category });
     });

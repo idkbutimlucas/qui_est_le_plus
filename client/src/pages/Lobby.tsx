@@ -31,7 +31,9 @@ export default function Lobby() {
     setNumberOfQuestions(room.settings.numberOfQuestions);
     setSelectedCategories(room.settings.categories as QuestionCategory[]);
 
-    if (room.status === 'playing') {
+    if (room.status === 'custom-questions') {
+      navigate('/custom-questions');
+    } else if (room.status === 'playing') {
       navigate('/game');
     }
   }, [room, navigate]);
@@ -73,7 +75,7 @@ export default function Lobby() {
     return null;
   }
 
-  const categories: QuestionCategory[] = ['soft', 'classique', 'humour-noir', 'hard', 'politiquement-incorrect'];
+  const categories: QuestionCategory[] = ['soft', 'classique', 'humour-noir', 'hard', 'politiquement-incorrect', 'custom'];
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white">

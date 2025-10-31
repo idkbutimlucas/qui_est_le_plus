@@ -108,9 +108,67 @@ io.on('connection', (socket) => {
 
       const { room, question } = result;
       io.to(room.code).emit('room:updated', room);
+
+      // Si c'est une catégorie custom, on ne démarre pas directement le jeu
+      if (room.status === 'custom-questions') {
+        console.log(`Mode questions personnalisées activé pour la room ${room.code}`);
+      } else if (question) {
+        io.to(room.code).emit('game:question', question);
+        console.log(`Jeu démarré dans la room ${room.code}`);
+      }
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors du démarrage du jeu');
+    }
+  });
+
+  // Ajouter une question personnalisée
+  socket.on('custom:addQuestion', (adjective) => {
+    try {
+      const room = roomManager.addCustomQuestion(socket.id, adjective);
+      if (!room) {
+        socket.emit('room:error', 'Impossible d\'ajouter la question');
+        return;
+      }
+
+      io.to(room.code).emit('room:updated', room);
+      io.to(room.code).emit('custom:questionsUpdated', room.customQuestions || []);
+      console.log(`Question custom ajoutée dans la room ${room.code}: ${adjective}`);
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors de l\'ajout de la question');
+    }
+  });
+
+  // Supprimer une question personnalisée
+  socket.on('custom:removeQuestion', (index) => {
+    try {
+      const room = roomManager.removeCustomQuestion(socket.id, index);
+      if (!room) {
+        socket.emit('room:error', 'Impossible de supprimer la question');
+        return;
+      }
+
+      io.to(room.code).emit('room:updated', room);
+      io.to(room.code).emit('custom:questionsUpdated', room.customQuestions || []);
+      console.log(`Question custom supprimée dans la room ${room.code} à l'index ${index}`);
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors de la suppression de la question');
+    }
+  });
+
+  // Démarrer le jeu avec les questions personnalisées
+  socket.on('custom:startGame', () => {
+    try {
+      const result = roomManager.startGameWithCustomQuestions(socket.id);
+      if (!result) {
+        socket.emit('room:error', 'Impossible de démarrer le jeu');
+        return;
+      }
+
+      const { room, question } = result;
+      io.to(room.code).emit('room:updated', room);
       io.to(room.code).emit('game:question', question);
 
-      console.log(`Jeu démarré dans la room ${room.code}`);
+      console.log(`Jeu démarré avec questions custom dans la room ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du démarrage du jeu');
     }

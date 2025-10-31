@@ -19,6 +19,11 @@ export default function Game() {
       return;
     }
 
+    if (room.status === 'custom-questions') {
+      navigate('/custom-questions');
+      return;
+    }
+
     if (room.status === 'finished') {
       navigate('/results');
       return;

@@ -118,12 +118,19 @@ export class RoomManager {
   }
 
   // Démarrer le jeu
-  startGame(playerId: string): { room: Room; question: Question } | null {
+  startGame(playerId: string): { room: Room; question?: Question } | null {
     const roomCode = this.playerRooms.get(playerId);
     if (!roomCode) return null;
 
     const room = this.rooms.get(roomCode);
     if (!room || room.hostId !== playerId || room.players.length < 2) return null;
+
+    // Vérifier si la catégorie custom est sélectionnée
+    if (room.settings.categories.includes('custom')) {
+      room.status = 'custom-questions';
+      room.customQuestions = [];
+      return { room };
+    }
 
     room.status = 'playing';
     room.currentQuestionIndex = 0;
@@ -148,6 +155,85 @@ export class RoomManager {
     room.currentQuestion = question;
 
     // Stocker toutes les questions pour la room (on pourrait les stocker dans la room)
+    (room as any).allQuestions = questionData;
+
+    return { room, question };
+  }
+
+  // Ajouter une question personnalisée
+  addCustomQuestion(playerId: string, adjective: string): Room | null {
+    const roomCode = this.playerRooms.get(playerId);
+    if (!roomCode) return null;
+
+    const room = this.rooms.get(roomCode);
+    if (!room || room.status !== 'custom-questions') return null;
+
+    // Initialiser le tableau si nécessaire
+    if (!room.customQuestions) {
+      room.customQuestions = [];
+    }
+
+    // Vérifier qu'on n'a pas déjà atteint le nombre de questions requis
+    if (room.customQuestions.length >= room.settings.numberOfQuestions) {
+      return null;
+    }
+
+    room.customQuestions.push(adjective);
+    return room;
+  }
+
+  // Supprimer une question personnalisée
+  removeCustomQuestion(playerId: string, index: number): Room | null {
+    const roomCode = this.playerRooms.get(playerId);
+    if (!roomCode) return null;
+
+    const room = this.rooms.get(roomCode);
+    if (!room || room.status !== 'custom-questions') return null;
+
+    if (!room.customQuestions || index < 0 || index >= room.customQuestions.length) {
+      return null;
+    }
+
+    room.customQuestions.splice(index, 1);
+    return room;
+  }
+
+  // Démarrer le jeu avec les questions personnalisées
+  startGameWithCustomQuestions(playerId: string): { room: Room; question: Question } | null {
+    const roomCode = this.playerRooms.get(playerId);
+    if (!roomCode) return null;
+
+    const room = this.rooms.get(roomCode);
+    if (!room || room.hostId !== playerId) return null;
+
+    // Vérifier qu'on a assez de questions
+    if (!room.customQuestions || room.customQuestions.length < room.settings.numberOfQuestions) {
+      return null;
+    }
+
+    room.status = 'playing';
+    room.currentQuestionIndex = 0;
+    room.votes = {};
+    room.results = [];
+
+    // Créer les questions à partir des adjectifs personnalisés
+    const questionData = room.customQuestions.map(adjective => ({
+      adjective,
+      category: 'custom' as const
+    }));
+
+    // Créer la première question
+    const firstQuestionData = questionData[0];
+    const question: Question = {
+      id: nanoid(),
+      text: `Qui est le plus ${firstQuestionData.adjective} ?`,
+      adjective: firstQuestionData.adjective,
+      category: firstQuestionData.category
+    };
+
+    room.currentQuestion = question;
+
+    // Stocker toutes les questions pour la room
     (room as any).allQuestions = questionData;
 
     return { room, question };
@@ -260,6 +346,7 @@ export class RoomManager {
     room.currentQuestion = undefined;
     room.votes = {};
     room.results = [];
+    room.customQuestions = undefined;
     delete (room as any).allQuestions;
 
     return room;
