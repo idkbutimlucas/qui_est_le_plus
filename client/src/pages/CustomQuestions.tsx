@@ -60,11 +60,7 @@ export default function CustomQuestions() {
   const handleRemoveQuestion = (index: number) => {
     if (!socket) return;
 
-    // Créer une nouvelle liste sans la question supprimée
-    const newQuestions = customQuestions.filter((_, i) => i !== index);
-
     // Mettre à jour sur le serveur
-    // On va émettre chaque question restante
     socket.emit('custom:removeQuestion', index);
   };
 

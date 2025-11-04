@@ -118,6 +118,17 @@ export default function Lobby() {
                     {showCode ? '👁️' : '👁️‍🗨️'}
                   </button>
 
+                  {/* Bouton régénérer le code - visible uniquement pour l'hôte */}
+                  {isHost && (
+                    <button
+                      onClick={handleRegenerateCode}
+                      className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
+                      title="Générer un nouveau code"
+                    >
+                      🔄
+                    </button>
+                  )}
+
                   {/* Bouton copier */}
                   <button
                     onClick={copyCode}
@@ -142,17 +153,6 @@ export default function Lobby() {
                       )}
                     </div>
                   </button>
-
-                  {/* Bouton régénérer le code - visible uniquement pour l'hôte */}
-                  {isHost && (
-                    <button
-                      onClick={handleRegenerateCode}
-                      className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
-                      title="Générer un nouveau code"
-                    >
-                      🔄
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
