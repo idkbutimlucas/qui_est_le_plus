@@ -69,7 +69,7 @@ export default function CustomQuestions() {
   }
 
   return (
-    <div className="neo-container min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="neo-container h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Forme décorative */}
       <div className="fixed top-20 right-20 w-32 h-32 organic-shape-2 bg-accent opacity-10 animate-float-soft"></div>
 
@@ -85,109 +85,107 @@ export default function CustomQuestions() {
         </div>
       </div>
 
-      <div className="max-w-4xl w-full relative z-10 animate-scale-in">
+      <div className="max-w-4xl w-full h-full relative z-10 animate-scale-in flex flex-col py-4">
         {/* En-tête */}
-        <div className="neo-card p-6 mb-6">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            Créez vos questions
-          </h1>
-          <p className="text-secondary font-medium text-base">
-            Tous les joueurs peuvent ajouter des adjectifs
-          </p>
-          <div className="mt-4">
-            <div className="neo-badge text-lg">
-              {questionsCompleted} / {numberOfQuestions} questions
+        <div className="neo-card p-4 mb-4 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-primary mb-2">
+                Créez vos questions
+              </h1>
+              <p className="text-secondary font-medium text-sm">
+                Tous les joueurs peuvent ajouter des adjectifs
+              </p>
+            </div>
+            <div className="neo-badge text-sm">
+              {questionsCompleted} / {numberOfQuestions}
             </div>
           </div>
         </div>
 
         {/* Formulaire d'ajout */}
-        <div className="neo-card p-6 mb-6">
-          <form onSubmit={handleAddQuestion} className="space-y-4">
-            <div>
-              <label className="block text-secondary font-semibold mb-3 text-lg">
-                Ajouter un adjectif
-              </label>
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
-                    Qui est le plus
-                  </span>
-                  <input
-                    type="text"
-                    value={currentAdjective}
-                    onChange={(e) => setCurrentAdjective(e.target.value)}
-                    placeholder="drôle, intelligent..."
-                    disabled={isComplete}
-                    className="neo-input w-full pl-48 pr-12 text-primary font-medium"
-                  />
-                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-secondary text-lg font-medium">
-                    ?
-                  </span>
-                </div>
-                <button
-                  type="submit"
-                  disabled={!currentAdjective.trim() || isComplete}
-                  className="neo-button-accent px-8 py-4 font-semibold text-white"
-                >
-                  Ajouter
-                </button>
+        <div className="neo-card p-4 mb-4 flex-shrink-0">
+          <form onSubmit={handleAddQuestion}>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-sm font-medium">
+                  Qui est le plus
+                </span>
+                <input
+                  type="text"
+                  value={currentAdjective}
+                  onChange={(e) => setCurrentAdjective(e.target.value)}
+                  placeholder="drôle..."
+                  disabled={isComplete}
+                  className="neo-input w-full pl-36 pr-10 text-primary font-medium text-sm"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
+                  ?
+                </span>
               </div>
+              <button
+                type="submit"
+                disabled={!currentAdjective.trim() || isComplete}
+                className="neo-button-accent px-6 py-3 text-sm font-semibold text-white"
+              >
+                +
+              </button>
             </div>
           </form>
         </div>
 
         {/* Liste des questions */}
-        <div className="neo-card p-6 mb-6">
-          <h2 className="text-3xl font-bold text-primary mb-4">
+        <div className="neo-card p-4 mb-4 flex flex-col flex-1 min-h-0">
+          <h2 className="text-xl font-bold text-primary mb-3 flex-shrink-0">
             Questions créées
           </h2>
           {customQuestions.length === 0 ? (
-            <div className="neo-pressed p-8 text-center">
-              <p className="text-secondary font-medium text-base">
+            <div className="neo-pressed p-4 text-center">
+              <p className="text-secondary font-medium text-sm">
                 Aucune question pour le moment
               </p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="neo-scroll-container flex-1 overflow-y-auto">
+              <div className="space-y-2 pr-2">
               {customQuestions.map((adjective, index) => (
                 <div
                   key={index}
-                  className="neo-card p-4 flex items-center justify-between hover-lift animate-slide-in"
-                  style={{ animationDelay: `${index * 0.05}s` }}
+                  className="neo-card p-3 flex items-center justify-between hover-lift"
                 >
-                  <p className="font-semibold text-base text-primary">
+                  <p className="font-semibold text-sm text-primary">
                     {index + 1}. Qui est le plus <span className="text-accent font-bold">{adjective}</span> ?
                   </p>
                   <button
                     onClick={() => handleRemoveQuestion(index)}
-                    className="neo-button p-3 text-red-500 hover:text-red-600"
+                    className="neo-button p-2 text-red-500 hover:text-red-600 text-sm"
                   >
                     ✕
                   </button>
                 </div>
               ))}
+              </div>
             </div>
           )}
         </div>
 
         {/* Bouton démarrer */}
         {isHost ? (
-          <div className="neo-card p-6">
+          <div className="neo-card p-4 flex-shrink-0">
             <button
               onClick={handleStartGame}
               disabled={!isComplete}
-              className="w-full neo-button-accent py-6 px-8 text-2xl font-bold text-white"
+              className="w-full neo-button-accent py-4 px-6 text-xl font-bold text-white"
             >
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-2">
                 {isComplete ? (
                   <>
-                    <span className="text-3xl">🎮</span>
+                    <span className="text-2xl">🎮</span>
                     <span>Démarrer la partie</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl">⏳</span>
+                    <span className="text-2xl">⏳</span>
                     <span>En attente de {numberOfQuestions - questionsCompleted} question{numberOfQuestions - questionsCompleted > 1 ? 's' : ''}</span>
                   </>
                 )}
@@ -195,17 +193,17 @@ export default function CustomQuestions() {
             </button>
           </div>
         ) : (
-          <div className="neo-card p-6">
-            <p className="text-center text-primary font-bold text-xl flex items-center justify-center gap-3">
+          <div className="neo-card p-4 flex-shrink-0">
+            <p className="text-center text-primary font-bold text-base flex items-center justify-center gap-2">
               {isComplete ? (
                 <>
-                  <span className="text-3xl">✅</span>
+                  <span className="text-2xl">✅</span>
                   <span>En attente de l'hôte...</span>
                 </>
               ) : (
                 <>
-                  <span className="text-3xl animate-pulse-soft">✏️</span>
-                  <span>Continuez à ajouter des questions !</span>
+                  <span className="text-2xl animate-pulse-soft">✏️</span>
+                  <span>Continuez à ajouter !</span>
                 </>
               )}
             </p>
