@@ -71,39 +71,47 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
-      <div className="max-w-md w-full">
-        {/* Titre principal avec logo */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <img src="/logo.png" alt="Logo" className="w-32 h-32 mx-auto" />
+    <div className="neo-container flex items-center justify-center p-4 min-h-screen relative overflow-hidden">
+      {/* Formes décoratives organiques en arrière-plan */}
+      <div className="fixed top-20 left-16 w-40 h-40 organic-shape-1 bg-accent opacity-10 animate-float-soft"></div>
+      <div className="fixed bottom-32 right-24 w-32 h-32 organic-shape-2 bg-accent-secondary opacity-10 animate-pulse-soft" style={{ animationDelay: '1s' }}></div>
+      <div className="fixed top-1/2 right-16 w-24 h-24 organic-shape-3 bg-accent opacity-10 animate-float-soft" style={{ animationDelay: '2s' }}></div>
+
+      <div className="max-w-md w-full relative z-10 animate-scale-in">
+        {/* Logo et titre */}
+        <div className="text-center mb-12">
+          <div className="inline-block mb-8 animate-float-soft">
+            <div className="neo-card p-6 organic-shape-1">
+              <img src="/logo.png" alt="Logo" className="w-32 h-32 mx-auto" />
+            </div>
           </div>
-          <h1 className="text-6xl font-bold mb-3 text-black font-grotesk">
-            QUI EST LE +
+
+          <h1 className="text-5xl font-bold mb-4 text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
+            Qui Est Le +
           </h1>
-          <p className="text-gray-600 text-lg font-medium font-sans">
+          <p className="text-secondary text-base font-medium">
             Le jeu pour mieux se connaître
           </p>
         </div>
 
         {/* Menu principal */}
         {mode === 'menu' && (
-          <div className="glass-card rounded-2xl p-6 space-y-4">
+          <div className="space-y-6 animate-slide-in">
             <button
               onClick={() => setMode('create')}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold text-lg py-4 px-6 rounded-xl transition-all duration-200 font-grotesk"
+              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
             >
               <div className="flex items-center justify-center gap-3">
-                <span className="text-xl">+</span>
+                <span className="text-2xl">✨</span>
                 <span>Créer une partie</span>
               </div>
             </button>
             <button
               onClick={() => setMode('join')}
-              className="w-full bg-white hover:bg-gray-50 text-black border border-gray-300 font-semibold text-lg py-4 px-6 rounded-xl transition-all duration-200 font-grotesk"
+              className="w-full neo-button py-5 px-8 text-xl font-semibold text-primary"
             >
               <div className="flex items-center justify-center gap-3">
-                <span className="text-xl">→</span>
+                <span className="text-2xl">🎮</span>
                 <span>Rejoindre une partie</span>
               </div>
             </button>
@@ -112,58 +120,60 @@ export default function Home() {
 
         {/* Créer une room */}
         {mode === 'create' && (
-          <div className="glass-card rounded-2xl p-6 space-y-5">
+          <div className="neo-card p-8 space-y-6 animate-slide-in">
             <button
               onClick={() => {
                 setMode('menu');
                 clearError();
               }}
-              className="text-gray-700 hover:text-black font-medium font-sans flex items-center gap-2 transition-all"
+              className="neo-button px-6 py-3 text-primary font-semibold flex items-center gap-2"
             >
-              <span className="text-lg">←</span>
+              <span>←</span>
               <span>Retour</span>
             </button>
 
-            <h2 className="text-3xl font-bold text-black text-center font-grotesk">
+            <h2 className="text-3xl font-bold text-accent text-center">
               Créer une partie
             </h2>
 
             {error && (
-              <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl font-medium font-sans">
-                {error}
+              <div className="neo-pressed p-4">
+                <p className="text-red-600 font-semibold text-center text-sm">
+                  {error}
+                </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="block text-gray-700 font-medium font-sans text-sm">
+              <label className="block text-secondary font-semibold text-sm">
                 Ton nom
               </label>
               <input
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-sans text-black placeholder-gray-400 transition-all"
+                className="w-full neo-input"
                 placeholder="Entre ton nom..."
                 maxLength={20}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block text-gray-700 font-medium font-sans text-sm">
-                Ta photo (optionnel)
+              <label className="block text-secondary font-semibold text-sm">
+                Photo (optionnel)
               </label>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {avatarPreview && (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-black"
-                  />
+                  <div className="neo-avatar w-20 h-20">
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
-                <label className="flex-1 bg-white border border-gray-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:border-black transition-all">
-                  <span className="font-medium text-gray-700 font-sans text-sm">
-                    {avatarPreview ? 'Changer la photo' : 'Ajouter une photo'}
-                  </span>
+                <label className="flex-1 neo-button px-6 py-4 text-center cursor-pointer text-primary font-semibold">
+                  <span>{avatarPreview ? 'Changer' : 'Ajouter une photo'}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -177,7 +187,7 @@ export default function Home() {
             <button
               onClick={handleCreateRoom}
               disabled={!playerName.trim()}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-lg py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
+              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
             >
               Créer la partie
             </button>
@@ -186,72 +196,77 @@ export default function Home() {
 
         {/* Rejoindre une room */}
         {mode === 'join' && (
-          <div className="glass-card rounded-2xl p-6 space-y-5">
+          <div className="neo-card p-8 space-y-6 animate-slide-in">
             <button
               onClick={() => {
                 setMode('menu');
                 clearError();
               }}
-              className="text-gray-700 hover:text-black font-medium font-sans flex items-center gap-2 transition-all"
+              className="neo-button px-6 py-3 text-primary font-semibold flex items-center gap-2"
             >
-              <span className="text-lg">←</span>
+              <span>←</span>
               <span>Retour</span>
             </button>
 
-            <h2 className="text-3xl font-bold text-black text-center font-grotesk">
+            <h2 className="text-3xl font-bold text-accent text-center">
               Rejoindre une partie
             </h2>
 
             {error && (
-              <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl font-medium font-sans">
-                {error}
+              <div className="neo-pressed p-4">
+                <p className="text-red-600 font-semibold text-center text-sm">
+                  {error}
+                </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="block text-gray-700 font-medium font-sans text-sm">
+              <label className="block text-secondary font-semibold text-sm">
                 Code de la partie
               </label>
-              <input
-                type="text"
-                value={roomCode}
-                onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-mono text-2xl font-bold uppercase text-center tracking-widest text-black placeholder-gray-400 transition-all"
-                placeholder="ABC123"
-                maxLength={6}
-              />
+              <div className="neo-card p-6 text-center organic-shape-1">
+                <input
+                  type="text"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                  className="w-full bg-transparent text-center font-mono text-3xl font-bold text-accent focus:outline-none tracking-[0.3em]"
+                  placeholder="ABC123"
+                  maxLength={6}
+                  style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-gray-700 font-medium font-sans text-sm">
+              <label className="block text-secondary font-semibold text-sm">
                 Ton nom
               </label>
               <input
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-black focus:ring-1 focus:ring-black font-sans text-black placeholder-gray-400 transition-all"
+                className="w-full neo-input"
                 placeholder="Entre ton nom..."
                 maxLength={20}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block text-gray-700 font-medium font-sans text-sm">
-                Ta photo (optionnel)
+              <label className="block text-secondary font-semibold text-sm">
+                Photo (optionnel)
               </label>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {avatarPreview && (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-black"
-                  />
+                  <div className="neo-avatar w-20 h-20">
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
-                <label className="flex-1 bg-white border border-gray-300 border-dashed rounded-xl px-4 py-3 text-center cursor-pointer hover:border-black transition-all">
-                  <span className="font-medium text-gray-700 font-sans text-sm">
-                    {avatarPreview ? 'Changer la photo' : 'Ajouter une photo'}
-                  </span>
+                <label className="flex-1 neo-button px-6 py-4 text-center cursor-pointer text-primary font-semibold">
+                  <span>{avatarPreview ? 'Changer' : 'Ajouter une photo'}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -265,7 +280,7 @@ export default function Home() {
             <button
               onClick={handleJoinRoom}
               disabled={!playerName.trim() || !roomCode.trim()}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-lg py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
+              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
             >
               Rejoindre
             </button>

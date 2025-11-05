@@ -23,7 +23,7 @@ export default function Lobby() {
   const handleRegenerateCode = () => {
     if (window.confirm('Voulez-vous vraiment générer un nouveau code ? L\'ancien code ne fonctionnera plus.')) {
       regenerateCode();
-      setShowCode(true); // Afficher le nouveau code
+      setShowCode(true);
     }
   };
 
@@ -91,59 +91,58 @@ export default function Lobby() {
   const categories: QuestionCategory[] = ['soft', 'classique', 'humour-noir', 'hard', 'politiquement-incorrect', 'custom'];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
-      <div className="max-w-5xl w-full">
+    <div className="neo-container min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Formes décoratives */}
+      <div className="fixed top-10 left-10 w-32 h-32 organic-shape-2 bg-accent opacity-10 animate-float-soft"></div>
+      <div className="fixed bottom-20 right-16 w-40 h-40 organic-shape-3 bg-accent-secondary opacity-10 animate-pulse-soft"></div>
+
+      <div className="max-w-6xl w-full relative z-10 animate-scale-in">
         {/* En-tête */}
-        <div className="glass-card rounded-3xl p-6 mb-6">
-          <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="neo-card p-8 mb-8">
+          <div className="flex justify-between items-center flex-wrap gap-6">
             <div className="flex-1">
-              <h1 className="text-5xl font-bold text-black mb-4 font-grotesk">
+              <h1 className="text-5xl font-bold mb-6 text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
                 Lobby
               </h1>
-              <div className="flex items-center gap-3 flex-wrap">
-                <p className="text-gray-700 font-medium font-sans">
-                  Code de la partie :
-                </p>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-3xl text-black font-mono tracking-widest">
-                    {showCode ? room.code : '••••••'}
-                  </span>
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="neo-badge">
+                  Code de la partie
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="neo-card px-6 py-3 organic-shape-1">
+                    <span className="font-mono text-3xl font-bold text-accent tracking-[0.3em]">
+                      {showCode ? room.code : '••••••'}
+                    </span>
+                  </div>
 
-                  {/* Bouton afficher/cacher */}
-                  <button
-                    onClick={() => setShowCode(!showCode)}
-                    className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
-                    title={showCode ? 'Cacher le code' : 'Afficher le code'}
-                  >
-                    {showCode ? '👁️' : '👁️‍🗨️'}
-                  </button>
-
-                  {/* Bouton régénérer le code - visible uniquement pour l'hôte */}
                   {isHost && (
                     <button
                       onClick={handleRegenerateCode}
-                      className="bg-white hover:bg-gray-50 border border-gray-300 text-black font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm"
+                      className="neo-button p-3"
                       title="Générer un nouveau code"
                     >
-                      🔄
+                      <span className="text-xl">🔄</span>
                     </button>
                   )}
 
-                  {/* Bouton copier */}
+                  <button
+                    onClick={() => setShowCode(!showCode)}
+                    className="neo-button p-3"
+                    title={showCode ? 'Cacher le code' : 'Afficher le code'}
+                  >
+                    <span className="text-xl">{showCode ? '👁️' : '👁️‍🗨️'}</span>
+                  </button>
+
                   <button
                     onClick={copyCode}
-                    className={`font-semibold py-2 px-4 rounded-xl transition-all duration-200 font-sans text-sm ${
-                      copied
-                        ? 'bg-black text-white'
-                        : 'bg-black hover:bg-gray-800 text-white'
-                    }`}
+                    className={`neo-button px-5 py-3 font-semibold transition-all ${copied ? 'animate-pulse-soft' : ''}`}
                     title="Copier le code"
                   >
                     <div className="flex items-center gap-2">
                       {copied ? (
                         <>
                           <span>✓</span>
-                          <span>Copié !</span>
+                          <span>Copié</span>
                         </>
                       ) : (
                         <>
@@ -158,85 +157,102 @@ export default function Lobby() {
             </div>
             <button
               onClick={handleLeaveRoom}
-              className="bg-white hover:bg-gray-50 text-black border border-gray-300 font-semibold py-3 px-6 rounded-xl transition-all duration-200 font-grotesk"
+              className="neo-button px-6 py-3 font-semibold text-primary hover-lift"
             >
-              Quitter
+              ✕ Quitter
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Liste des joueurs */}
-          <div className="glass-card rounded-3xl p-6">
-            <h2 className="text-3xl font-bold text-black mb-6 font-grotesk">
-              Joueurs ({room.players.length})
-            </h2>
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="neo-card p-7">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
+                Joueurs
+              </h2>
+              <div className="neo-badge text-lg">
+                {room.players.length}
+              </div>
+            </div>
+            <div className="neo-scroll-container max-h-96 overflow-y-auto">
+              <div className="space-y-4 pr-2">
               {room.players.map((player) => (
                 <div
                   key={player.id}
-                  className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-300 transition-all duration-200"
+                  className="neo-card p-5 hover-lift flex items-center gap-4"
                 >
                   {player.avatar ? (
-                    <div className="relative">
+                    <div className="neo-avatar w-16 h-16">
                       <img
                         src={player.avatar}
                         alt={player.name}
-                        className="w-14 h-14 rounded-full object-cover border-2 border-black"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center text-white font-bold text-2xl">
-                      {player.name[0].toUpperCase()}
+                    <div className="neo-avatar w-16 h-16 flex items-center justify-center">
+                      <div className="bg-accent-gradient w-full h-full flex items-center justify-center text-white font-bold text-2xl" style={{ borderRadius: 'inherit' }}>
+                        {player.name[0].toUpperCase()}
+                      </div>
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-semibold text-lg font-grotesk text-black">{player.name}</p>
+                    <p className="font-bold text-lg text-primary">{player.name}</p>
                     {player.isHost && (
-                      <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-800 border border-gray-300 px-3 py-1 rounded-full font-semibold font-sans">
+                      <span className="neo-badge text-xs">
                         <span>👑</span>
-                        <span>Hôte</span>
+                        <span className="ml-1">Hôte</span>
                       </span>
                     )}
                   </div>
-                  {/* Bouton d'expulsion - visible uniquement pour l'hôte et pas pour lui-même */}
                   {isHost && !player.isHost && (
                     <button
                       onClick={() => handleKickPlayer(player.id)}
-                      className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl transition-all duration-200 font-sans text-sm border border-red-200"
+                      className="neo-button p-3 text-red-500 hover:text-red-600"
                       title="Expulser ce joueur"
                     >
-                      ✕
+                      <span className="text-lg">✕</span>
                     </button>
                   )}
                 </div>
               ))}
+              </div>
             </div>
           </div>
 
           {/* Settings */}
-          <div className="glass-card rounded-3xl p-6">
+          <div className="neo-card p-7">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-black font-grotesk">
+              <h2 className="text-3xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
                 Paramètres
               </h2>
               {isHost && (
                 <button
                   onClick={() => setShowSettings(!showSettings)}
-                  className="text-sm bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full font-semibold transition-all duration-200 font-sans"
+                  className="neo-button-accent px-6 py-3 font-semibold text-white"
                 >
-                  {showSettings ? 'Masquer' : 'Modifier'}
+                  {showSettings ? '✕ Masquer' : '⚙️ Modifier'}
                 </button>
               )}
             </div>
 
             {/* Nombre de questions */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-3 font-grotesk text-lg">
-                Nombre de questions : <span className="text-black">{numberOfQuestions}</span>
-              </label>
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="neo-badge text-sm">
+                  Questions
+                </div>
+                <span className="text-4xl font-bold text-accent">{numberOfQuestions}</span>
+              </div>
               {isHost && showSettings ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
+                  <div className="neo-progress-bar h-6">
+                    <div
+                      className="neo-progress-fill"
+                      style={{ width: `${((numberOfQuestions - 5) / 25) * 100}%` }}
+                    ></div>
+                  </div>
                   <input
                     type="range"
                     min="5"
@@ -244,9 +260,9 @@ export default function Lobby() {
                     step="5"
                     value={numberOfQuestions}
                     onChange={(e) => handleNumberOfQuestionsChange(parseInt(e.target.value))}
-                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                    className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-gray-500 font-sans">
+                  <div className="flex justify-between text-sm text-secondary font-semibold">
                     <span>5</span>
                     <span>10</span>
                     <span>15</span>
@@ -256,7 +272,7 @@ export default function Lobby() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white px-5 py-3 rounded-2xl border border-gray-300 font-semibold text-black font-sans">
+                <div className="neo-pressed px-6 py-4 font-semibold text-primary">
                   {numberOfQuestions} questions
                 </div>
               )}
@@ -264,35 +280,37 @@ export default function Lobby() {
 
             {/* Catégories */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-3 font-grotesk text-lg">
+              <div className="neo-badge text-sm mb-4 inline-block">
                 Catégories
-              </label>
-              <div className="space-y-3 max-h-64 overflow-y-auto">
+              </div>
+              <div className="neo-scroll-container max-h-64 overflow-y-auto">
+                <div className="space-y-3 pr-2">
                 {categories.map((category) => (
                   <div key={category}>
                     {isHost && showSettings ? (
                       <button
                         onClick={() => handleCategoryToggle(category)}
-                        className={`w-full px-5 py-3 rounded-2xl border font-semibold transition-all duration-200 font-sans ${
+                        className={`w-full px-6 py-4 font-semibold transition-all hover-lift ${
                           selectedCategories.includes(category)
-                            ? 'bg-black text-white border-black'
-                            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                            ? 'neo-button-accent text-white'
+                            : 'neo-button text-primary'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <span>{categoryLabels[category]}</span>
-                          {selectedCategories.includes(category) && <span className="text-lg">✓</span>}
+                          {selectedCategories.includes(category) && <span className="text-xl">✓</span>}
                         </div>
                       </button>
                     ) : (
                       selectedCategories.includes(category) && (
-                        <div className="px-5 py-3 rounded-2xl border border-gray-300 font-semibold font-sans bg-gray-100 text-gray-800">
+                        <div className="neo-pressed px-6 py-4 font-semibold text-primary">
                           {categoryLabels[category]}
                         </div>
                       )
                     )}
                   </div>
                 ))}
+                </div>
               </div>
             </div>
           </div>
@@ -300,22 +318,22 @@ export default function Lobby() {
 
         {/* Bouton démarrer */}
         {isHost && (
-          <div className="glass-card rounded-3xl p-6">
+          <div className="neo-card p-8">
             <button
               onClick={handleStartGame}
               disabled={room.players.length < 2}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
+              className="w-full neo-button-accent py-8 px-10 text-3xl font-bold text-white"
             >
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-4">
                 {room.players.length < 2 ? (
                   <>
-                    <span className="text-3xl">⏳</span>
-                    <span>En attente de joueurs... (minimum 2)</span>
+                    <span className="text-4xl">⏳</span>
+                    <span>En attente (min 2 joueurs)</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl">🎮</span>
-                    <span>Démarrer la partie !</span>
+                    <span className="text-5xl">🎮</span>
+                    <span>Démarrer la partie</span>
                   </>
                 )}
               </div>
@@ -324,10 +342,10 @@ export default function Lobby() {
         )}
 
         {!isHost && (
-          <div className="glass-card rounded-3xl p-6">
-            <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
-              <span className="text-3xl">⏳</span>
-              <span>En attente que l'hôte démarre la partie...</span>
+          <div className="neo-card p-8">
+            <p className="text-center text-primary font-bold text-2xl flex items-center justify-center gap-4">
+              <span className="text-4xl animate-pulse-soft">⏳</span>
+              <span>En attente de l'hôte...</span>
             </p>
           </div>
         )}

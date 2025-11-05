@@ -29,7 +29,6 @@ export default function CustomQuestions() {
       return;
     }
 
-    // Synchroniser avec les questions custom de la room
     if (room.customQuestions) {
       setCustomQuestions(room.customQuestions);
     }
@@ -38,7 +37,6 @@ export default function CustomQuestions() {
   useEffect(() => {
     if (!socket) return;
 
-    // Écouter les mises à jour des questions custom
     socket.on('custom:questionsUpdated', (questions: string[]) => {
       setCustomQuestions(questions);
     });
@@ -52,15 +50,12 @@ export default function CustomQuestions() {
     e.preventDefault();
     if (!currentAdjective.trim() || !socket) return;
 
-    // Envoyer l'adjectif au serveur
     socket.emit('custom:addQuestion', currentAdjective.trim());
     setCurrentAdjective('');
   };
 
   const handleRemoveQuestion = (index: number) => {
     if (!socket) return;
-
-    // Mettre à jour sur le serveur
     socket.emit('custom:removeQuestion', index);
   };
 
@@ -74,65 +69,66 @@ export default function CustomQuestions() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
-      {/* Indicateur dans le coin */}
-      <div className="fixed top-6 left-6 z-20">
-        <div className="bg-white rounded-2xl px-4 py-2.5 border border-gray-300">
+    <div className="neo-container min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Forme décorative */}
+      <div className="fixed top-20 right-20 w-32 h-32 organic-shape-2 bg-accent opacity-10 animate-float-soft"></div>
+
+      {/* Indicateur */}
+      <div className="fixed top-6 left-6 z-20 animate-slide-in">
+        <div className="neo-card px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-black"></div>
-            <p className="text-sm text-black font-semibold font-grotesk tracking-wide">
+            <div className="neo-indicator"></div>
+            <p className="text-sm font-semibold text-primary">
               ✏️ Questions personnalisées
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl w-full">
+      <div className="max-w-4xl w-full relative z-10 animate-scale-in">
         {/* En-tête */}
-        <div className="glass-card rounded-3xl p-6 mb-6">
-          <h1 className="text-5xl font-bold text-black mb-4 font-grotesk">
+        <div className="neo-card p-6 mb-6">
+          <h1 className="text-4xl font-bold text-primary mb-4">
             Créez vos questions
           </h1>
-          <p className="text-gray-700 font-medium font-sans text-lg">
-            Tous les joueurs peuvent ajouter des adjectifs pour personnaliser les questions.
+          <p className="text-secondary font-medium text-base">
+            Tous les joueurs peuvent ajouter des adjectifs
           </p>
           <div className="mt-4">
-            <div className="bg-gray-100 rounded-2xl px-5 py-3 inline-block">
-              <p className="text-black font-bold font-grotesk text-xl">
-                {questionsCompleted} / {numberOfQuestions} questions
-              </p>
+            <div className="neo-badge text-lg">
+              {questionsCompleted} / {numberOfQuestions} questions
             </div>
           </div>
         </div>
 
         {/* Formulaire d'ajout */}
-        <div className="glass-card rounded-3xl p-6 mb-6">
+        <div className="neo-card p-6 mb-6">
           <form onSubmit={handleAddQuestion} className="space-y-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-3 font-grotesk text-lg">
+              <label className="block text-secondary font-semibold mb-3 text-lg">
                 Ajouter un adjectif
               </label>
               <div className="flex gap-3">
                 <div className="flex-1 relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 font-sans text-lg">
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
                     Qui est le plus
                   </span>
                   <input
                     type="text"
                     value={currentAdjective}
                     onChange={(e) => setCurrentAdjective(e.target.value)}
-                    placeholder="drôle, intelligent, etc."
+                    placeholder="drôle, intelligent..."
                     disabled={isComplete}
-                    className="w-full pl-40 pr-5 py-4 rounded-2xl border border-gray-300 font-sans text-lg focus:outline-none focus:border-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="neo-input w-full pl-48 pr-12 text-primary font-medium"
                   />
-                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 font-sans text-lg">
+                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-secondary text-lg font-medium">
                     ?
                   </span>
                 </div>
                 <button
                   type="submit"
                   disabled={!currentAdjective.trim() || isComplete}
-                  className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-200 font-grotesk disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="neo-button-accent px-8 py-4 font-semibold text-white"
                 >
                   Ajouter
                 </button>
@@ -142,14 +138,14 @@ export default function CustomQuestions() {
         </div>
 
         {/* Liste des questions */}
-        <div className="glass-card rounded-3xl p-6 mb-6">
-          <h2 className="text-3xl font-bold text-black mb-4 font-grotesk">
+        <div className="neo-card p-6 mb-6">
+          <h2 className="text-3xl font-bold text-primary mb-4">
             Questions créées
           </h2>
           {customQuestions.length === 0 ? (
-            <div className="bg-gray-50 rounded-2xl p-8 text-center">
-              <p className="text-gray-500 font-sans text-lg">
-                Aucune question ajoutée pour le moment
+            <div className="neo-pressed p-8 text-center">
+              <p className="text-secondary font-medium text-base">
+                Aucune question pour le moment
               </p>
             </div>
           ) : (
@@ -157,16 +153,17 @@ export default function CustomQuestions() {
               {customQuestions.map((adjective, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-white p-4 rounded-2xl border border-gray-300"
+                  className="neo-card p-4 flex items-center justify-between hover-lift animate-slide-in"
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <p className="font-semibold text-lg font-sans text-black">
-                    {index + 1}. Qui est le plus <span className="text-black font-bold">{adjective}</span> ?
+                  <p className="font-semibold text-base text-primary">
+                    {index + 1}. Qui est le plus <span className="text-accent font-bold">{adjective}</span> ?
                   </p>
                   <button
                     onClick={() => handleRemoveQuestion(index)}
-                    className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl transition-all duration-200 font-sans text-sm border border-red-200"
+                    className="neo-button p-3 text-red-500 hover:text-red-600"
                   >
-                    Supprimer
+                    ✕
                   </button>
                 </div>
               ))}
@@ -176,38 +173,38 @@ export default function CustomQuestions() {
 
         {/* Bouton démarrer */}
         {isHost ? (
-          <div className="glass-card rounded-3xl p-6">
+          <div className="neo-card p-6">
             <button
               onClick={handleStartGame}
               disabled={!isComplete}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-grotesk"
+              className="w-full neo-button-accent py-6 px-8 text-2xl font-bold text-white"
             >
               <div className="flex items-center justify-center gap-3">
                 {isComplete ? (
                   <>
                     <span className="text-3xl">🎮</span>
-                    <span>Démarrer la partie !</span>
+                    <span>Démarrer la partie</span>
                   </>
                 ) : (
                   <>
                     <span className="text-3xl">⏳</span>
-                    <span>En attente de {numberOfQuestions - questionsCompleted} question{numberOfQuestions - questionsCompleted > 1 ? 's' : ''}...</span>
+                    <span>En attente de {numberOfQuestions - questionsCompleted} question{numberOfQuestions - questionsCompleted > 1 ? 's' : ''}</span>
                   </>
                 )}
               </div>
             </button>
           </div>
         ) : (
-          <div className="glass-card rounded-3xl p-6">
-            <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
+          <div className="neo-card p-6">
+            <p className="text-center text-primary font-bold text-xl flex items-center justify-center gap-3">
               {isComplete ? (
                 <>
                   <span className="text-3xl">✅</span>
-                  <span>En attente que l'hôte démarre la partie...</span>
+                  <span>En attente de l'hôte...</span>
                 </>
               ) : (
                 <>
-                  <span className="text-3xl">✏️</span>
+                  <span className="text-3xl animate-pulse-soft">✏️</span>
                   <span>Continuez à ajouter des questions !</span>
                 </>
               )}

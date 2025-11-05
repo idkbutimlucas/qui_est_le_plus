@@ -40,7 +40,6 @@ export default function Results() {
   const isFinished = room.status === 'finished';
   const ranking = currentResult.ranking;
 
-  // Calculer le rang de chaque joueur en tenant compte des égalités
   const getRank = (index: number) => {
     if (index === 0) return 1;
     let rank = 1;
@@ -60,37 +59,29 @@ export default function Results() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
-      {/* Indicateur discret dans le coin */}
-      <div className="fixed top-6 left-6 z-20">
-        <div className="bg-white rounded-2xl px-4 py-2.5 border border-gray-300">
+    <div className="neo-container min-h-screen flex items-center justify-center p-4">
+      {/* Indicateur */}
+      <div className="fixed top-6 left-6 z-20 animate-slide-in">
+        <div className="neo-card px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              isFinished
-                ? 'bg-black'
-                : 'bg-black'
-            }`}></div>
-            <p className="text-sm text-black font-semibold font-grotesk tracking-wide">
+            <div className={`neo-indicator ${isFinished ? 'animate-glow-soft' : ''}`}></div>
+            <p className="text-sm font-semibold text-primary">
               {isFinished ? '🎉 Terminé' : '📊 Résultats'}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl w-full">
-
-        {/* Question - Design épuré */}
-        <div className="relative mb-6">
-          <div className="glass-card rounded-2xl px-8 py-5">
-            {/* Texte de la question */}
-            <h2 className="text-3xl md:text-4xl font-bold text-center font-grotesk leading-snug text-black">
-              {currentResult.question.text}
-            </h2>
-          </div>
+      <div className="max-w-5xl w-full relative z-10">
+        {/* Question */}
+        <div className="neo-card p-6 mb-8 animate-scale-in">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-primary leading-tight">
+            {currentResult.question.text}
+          </h2>
         </div>
 
-        {/* Classement complet - Tous les joueurs */}
-        <div className="space-y-3 mb-6">
+        {/* Classement complet */}
+        <div className="space-y-4 mb-8">
           {ranking.map((item, index) => {
             const rank = getRank(index);
             const medal = getMedal(rank, item.votes);
@@ -102,13 +93,19 @@ export default function Results() {
             return (
               <div
                 key={item.player.id}
-                className={`glass-card rounded-2xl overflow-hidden ${isTopThree ? 'border-2 border-black' : ''}`}
+                className={`neo-card overflow-hidden hover-lift animate-slide-in ${isTopThree ? 'animate-glow-soft' : ''}`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Barre de fond animée */}
                 <div className="relative">
+                  {/* Barre de fond */}
                   <div
-                    className="absolute top-0 left-0 h-full bg-gray-200 transition-all duration-1000 ease-out"
-                    style={{ width: `${barWidth}%` }}
+                    className="absolute top-0 left-0 h-full transition-all duration-1000 ease-out"
+                    style={{
+                      width: `${barWidth}%`,
+                      background: isTopThree
+                        ? 'linear-gradient(145deg, rgba(201, 149, 109, 0.15), rgba(184, 136, 107, 0.15))'
+                        : 'rgba(93, 78, 63, 0.05)'
+                    }}
                   />
 
                   {/* Contenu */}
@@ -117,47 +114,45 @@ export default function Results() {
                       {/* Position */}
                       <div className="flex flex-col items-center gap-1">
                         {medal && (
-                          <div className="text-3xl">
+                          <div className="text-3xl animate-pulse-soft">
                             {medal}
                           </div>
                         )}
-                        <div className="text-2xl font-bold font-grotesk text-black">
+                        <div className={`text-2xl font-bold px-4 py-2 rounded-full ${isTopThree ? 'neo-badge' : 'neo-pressed text-primary'}`}>
                           #{rank}
                         </div>
                       </div>
 
                       {/* Avatar */}
                       {item.player.avatar ? (
-                        <div className="relative">
+                        <div className="neo-avatar w-20 h-20">
                           <img
                             src={item.player.avatar}
                             alt={item.player.name}
-                            className={`w-20 h-20 rounded-full object-cover border-2 ${
-                              isTopThree ? 'border-black' : 'border-gray-300'
-                            }`}
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       ) : (
-                        <div className={`w-20 h-20 rounded-full bg-black flex items-center justify-center text-white font-bold text-3xl ${
-                          isTopThree ? 'border-2 border-black' : ''
-                        }`}>
-                          {item.player.name[0].toUpperCase()}
+                        <div className="neo-avatar w-20 h-20 flex items-center justify-center">
+                          <div className={`w-full h-full flex items-center justify-center font-bold text-3xl ${isTopThree ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
+                            {item.player.name[0].toUpperCase()}
+                          </div>
                         </div>
                       )}
 
                       {/* Nom et votes */}
                       <div>
-                        <p className="font-bold text-xl font-grotesk text-black">
+                        <p className="font-bold text-xl text-primary">
                           {item.player.name}
                         </p>
-                        <p className="text-sm font-semibold font-sans text-gray-600">
+                        <p className="text-sm font-semibold text-secondary">
                           {item.votes} vote{item.votes > 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
 
                     {/* Score */}
-                    <div className="text-5xl font-bold font-grotesk text-black">
+                    <div className={`text-5xl font-bold px-4 py-2 ${isTopThree ? 'text-accent' : 'text-primary'}`}>
                       {item.votes}
                     </div>
                   </div>
@@ -169,31 +164,31 @@ export default function Results() {
 
         {/* Gestion égalités */}
         {ranking.filter(r => r.votes === ranking[0].votes && r.votes > 0).length > 1 && (
-          <div className="glass-card rounded-2xl p-5 mb-6 border border-gray-300 bg-white">
-            <p className="text-center font-semibold text-black font-sans flex items-center justify-center gap-2">
+          <div className="neo-card p-5 mb-8 animate-slide-in">
+            <p className="text-center font-bold text-primary flex items-center justify-center gap-2">
               <span className="text-2xl">⚠️</span>
-              <span>Égalité ! Plusieurs personnes ont reçu le même nombre de votes</span>
+              <span>Égalité !</span>
             </p>
           </div>
         )}
 
         {/* Personne n'a voté */}
         {ranking.every(r => r.votes === 0) && (
-          <div className="glass-card rounded-2xl p-5 mb-6 border border-gray-300 bg-white">
-            <p className="text-center font-semibold text-black font-sans flex items-center justify-center gap-2">
+          <div className="neo-card p-5 mb-8 animate-slide-in">
+            <p className="text-center font-bold text-primary flex items-center justify-center gap-2">
               <span className="text-2xl">🤷</span>
-              <span>Personne n'a reçu de votes pour cette question !</span>
+              <span>Aucun vote !</span>
             </p>
           </div>
         )}
 
         {/* Boutons */}
         {isHost && (
-          <div className="glass-card rounded-3xl p-6">
+          <div className="neo-card p-6 animate-scale-in">
             {isFinished ? (
               <button
                 onClick={handleBackToLobby}
-                className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+                className="w-full neo-button-accent font-bold text-2xl py-6 px-8 text-white"
               >
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-3xl">🔄</span>
@@ -203,7 +198,7 @@ export default function Results() {
             ) : (
               <button
                 onClick={handleNextQuestion}
-                className="w-full bg-black hover:bg-gray-800 text-white font-bold text-2xl py-6 px-8 rounded-2xl transition-all duration-200 font-grotesk"
+                className="w-full neo-button-accent font-bold text-2xl py-6 px-8 text-white"
               >
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-3xl">➡️</span>
@@ -215,17 +210,17 @@ export default function Results() {
         )}
 
         {!isHost && (
-          <div className="glass-card rounded-3xl p-6">
-            <p className="text-center text-black font-semibold text-xl font-grotesk flex items-center justify-center gap-3">
+          <div className="neo-card p-6 animate-scale-in">
+            <p className="text-center text-primary font-bold text-xl flex items-center justify-center gap-3">
               {isFinished ? (
                 <>
                   <span className="text-3xl">🎉</span>
-                  <span>Merci d'avoir joué !</span>
+                  <span>Merci !</span>
                 </>
               ) : (
                 <>
-                  <span className="text-3xl">⏳</span>
-                  <span>En attente que l'hôte lance la prochaine question...</span>
+                  <span className="text-3xl animate-pulse-soft">⏳</span>
+                  <span>En attente...</span>
                 </>
               )}
             </p>

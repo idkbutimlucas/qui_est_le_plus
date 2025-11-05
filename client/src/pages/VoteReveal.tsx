@@ -21,7 +21,6 @@ export default function VoteReveal() {
   const [currentRevealIndex, setCurrentRevealIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
-  // Préparer la liste des votes à révéler
   const [voteItems, setVoteItems] = useState<VoteRevealItem[]>([]);
 
   useEffect(() => {
@@ -30,7 +29,6 @@ export default function VoteReveal() {
       return;
     }
 
-    // Créer la liste des votes à partir des données de la room
     const items: VoteRevealItem[] = [];
     Object.entries(room.votes).forEach(([voterId, votedForId]) => {
       const voter = room.players.find(p => p.id === voterId);
@@ -48,12 +46,10 @@ export default function VoteReveal() {
       }
     });
 
-    // Mélanger les votes pour plus de suspense
     const shuffled = items.sort(() => Math.random() - 0.5);
     setVoteItems(shuffled);
   }, [room, currentResult, navigate]);
 
-  // Countdown
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -63,19 +59,17 @@ export default function VoteReveal() {
     }
   }, [countdown]);
 
-  // Révélation progressive des votes
   useEffect(() => {
     if (!isCountdownDone || currentRevealIndex >= voteItems.length) return;
 
     const timer = setTimeout(() => {
       setRevealedVotes(prev => [...prev, voteItems[currentRevealIndex]]);
       setCurrentRevealIndex(prev => prev + 1);
-    }, 1500); // Révéler un vote toutes les 1.5 secondes
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [isCountdownDone, currentRevealIndex, voteItems]);
 
-  // Détecter la fin
   useEffect(() => {
     if (revealedVotes.length === voteItems.length && voteItems.length > 0) {
       setTimeout(() => {
@@ -84,7 +78,6 @@ export default function VoteReveal() {
     }
   }, [revealedVotes, voteItems]);
 
-  // Transition automatique vers Results
   useEffect(() => {
     if (isComplete) {
       setTimeout(() => {
@@ -98,15 +91,17 @@ export default function VoteReveal() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-white overflow-hidden">
+    <div className="neo-container min-h-screen flex items-center justify-center p-4 overflow-hidden">
       {/* Countdown */}
       {!isCountdownDone && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-95">
-          <div className="text-center">
-            <div className="countdown-number text-white font-bold font-grotesk mb-4">
-              {countdown}
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+          <div className="text-center animate-scale-in">
+            <div className="neo-card p-12 mb-6 organic-shape-1">
+              <div className="neo-countdown animate-pulse-soft">
+                {countdown}
+              </div>
             </div>
-            <p className="text-white text-2xl font-semibold font-grotesk animate-pulse">
+            <p className="text-primary text-3xl font-bold">
               Révélation des votes...
             </p>
           </div>
@@ -116,17 +111,19 @@ export default function VoteReveal() {
       {/* Contenu principal */}
       <div className="max-w-4xl w-full">
         {/* En-tête */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-black font-grotesk mb-2">
-            🎭 Qui a voté pour qui ?
-          </h1>
-          <p className="text-gray-600 font-medium font-sans">
+        <div className="text-center mb-8 animate-scale-in">
+          <div className="neo-card p-6 inline-block organic-shape-1 mb-4">
+            <h1 className="text-4xl font-bold text-primary">
+              🎭 Les votes
+            </h1>
+          </div>
+          <p className="text-primary font-bold text-lg">
             {currentResult.question.text}
           </p>
         </div>
 
         {/* Liste des votes révélés */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {revealedVotes.map((vote, index) => {
             const isMe = vote.voterId === socket?.id;
             const votedForMe = vote.votedForId === socket?.id;
@@ -134,63 +131,67 @@ export default function VoteReveal() {
             return (
               <div
                 key={`${vote.voterId}-${index}`}
-                className="vote-reveal-card glass-card rounded-2xl p-6 border-2 border-black"
+                className="neo-card p-6 vote-card-enter hover-lift"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex items-center justify-between gap-4">
                   {/* Votant */}
                   <div className="flex items-center gap-3 flex-1">
                     {vote.voterAvatar ? (
-                      <img
-                        src={vote.voterAvatar}
-                        alt={vote.voterName}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-black"
-                      />
+                      <div className="neo-avatar w-16 h-16">
+                        <img
+                          src={vote.voterAvatar}
+                          alt={vote.voterName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center text-white font-bold text-2xl">
-                        {vote.voterName[0].toUpperCase()}
+                      <div className="neo-avatar w-16 h-16 flex items-center justify-center">
+                        <div className="bg-accent-gradient w-full h-full flex items-center justify-center text-white font-bold text-2xl" style={{ borderRadius: 'inherit' }}>
+                          {vote.voterName[0].toUpperCase()}
+                        </div>
                       </div>
                     )}
                     <div>
-                      <p className="font-bold text-lg font-grotesk text-black">
+                      <p className="font-bold text-lg text-primary">
                         {vote.voterName}
-                        {isMe && <span className="text-sm text-gray-600 ml-1">(Toi)</span>}
+                        {isMe && <span className="text-xs text-secondary ml-1">(Toi)</span>}
                       </p>
-                      <p className="text-sm text-gray-600 font-sans">a voté pour</p>
+                      <p className="text-sm text-secondary font-semibold">→ A voté pour</p>
                     </div>
                   </div>
 
-                  {/* Flèche animée */}
-                  <div className="arrow-animation text-4xl">
+                  {/* Flèche */}
+                  <div className="text-4xl text-accent font-bold">
                     →
                   </div>
 
                   {/* Destinataire */}
                   <div className="flex items-center gap-3 flex-1 justify-end">
                     <div className="text-right">
-                      <p className="font-bold text-lg font-grotesk text-black">
+                      <p className="font-bold text-lg text-primary">
                         {vote.votedForName}
-                        {votedForMe && <span className="text-sm text-gray-600 ml-1">(Toi!)</span>}
+                        {votedForMe && <span className="text-xs text-secondary ml-1">(Toi!)</span>}
                       </p>
                       {votedForMe && (
-                        <p className="text-sm font-semibold text-black font-sans">
-                          🎉 Tu as reçu un vote !
+                        <p className="text-sm font-bold text-accent">
+                          🎉 +1 vote
                         </p>
                       )}
                     </div>
                     {vote.votedForAvatar ? (
-                      <img
-                        src={vote.votedForAvatar}
-                        alt={vote.votedForName}
-                        className={`w-16 h-16 rounded-full object-cover border-2 ${
-                          votedForMe ? 'border-black ring-4 ring-black ring-opacity-30' : 'border-black'
-                        }`}
-                      />
+                      <div className={`neo-avatar w-16 h-16 ${votedForMe ? 'animate-glow-soft' : ''}`}>
+                        <img
+                          src={vote.votedForAvatar}
+                          alt={vote.votedForName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     ) : (
-                      <div className={`w-16 h-16 rounded-full bg-black flex items-center justify-center text-white font-bold text-2xl ${
-                        votedForMe ? 'ring-4 ring-black ring-opacity-30' : ''
-                      }`}>
-                        {vote.votedForName[0].toUpperCase()}
+                      <div className={`neo-avatar w-16 h-16 flex items-center justify-center ${votedForMe ? 'animate-glow-soft' : ''}`}>
+                        <div className={`w-full h-full flex items-center justify-center font-bold text-2xl ${votedForMe ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
+                          {vote.votedForName[0].toUpperCase()}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -202,13 +203,13 @@ export default function VoteReveal() {
 
         {/* Indicateur de progression */}
         {isCountdownDone && !isComplete && (
-          <div className="mt-8 text-center">
-            <p className="text-gray-600 font-medium font-sans mb-3">
-              Révélation en cours... {revealedVotes.length} / {voteItems.length}
+          <div className="mt-8 text-center animate-slide-in">
+            <p className="text-primary font-bold mb-4 text-lg">
+              {revealedVotes.length} / {voteItems.length}
             </p>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden max-w-md mx-auto">
+            <div className="neo-progress-bar h-4 max-w-md mx-auto">
               <div
-                className="h-full bg-black transition-all duration-500"
+                className="neo-progress-fill"
                 style={{
                   width: `${(revealedVotes.length / voteItems.length) * 100}%`,
                 }}
@@ -220,12 +221,12 @@ export default function VoteReveal() {
         {/* Message de fin */}
         {isComplete && (
           <div className="mt-8 text-center animate-scale-in">
-            <div className="glass-card rounded-2xl p-8 border-2 border-black">
-              <p className="text-3xl font-bold text-black font-grotesk mb-2">
-                ✨ Tous les votes ont été révélés ! ✨
+            <div className="neo-card p-8">
+              <p className="text-3xl font-bold text-primary mb-3">
+                ✨ Terminé ! ✨
               </p>
-              <p className="text-gray-600 font-medium font-sans">
-                Direction les résultats...
+              <p className="text-secondary font-semibold">
+                → Résultats
               </p>
             </div>
           </div>
