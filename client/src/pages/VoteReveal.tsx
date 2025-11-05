@@ -91,17 +91,17 @@ export default function VoteReveal() {
   }
 
   return (
-    <div className="neo-container min-h-screen flex items-center justify-center p-4 overflow-hidden">
+    <div className="neo-container h-screen flex items-center justify-center p-4 overflow-hidden">
       {/* Countdown */}
       {!isCountdownDone && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
           <div className="text-center animate-scale-in">
-            <div className="neo-card p-12 mb-6 organic-shape-1">
+            <div className="neo-card p-8 mb-4 organic-shape-1">
               <div className="neo-countdown animate-pulse-soft">
                 {countdown}
               </div>
             </div>
-            <p className="text-primary text-3xl font-bold">
+            <p className="text-primary text-2xl font-bold">
               Révélation des votes...
             </p>
           </div>
@@ -109,21 +109,22 @@ export default function VoteReveal() {
       )}
 
       {/* Contenu principal */}
-      <div className="max-w-4xl w-full">
+      <div className="max-w-4xl w-full h-full flex flex-col py-4">
         {/* En-tête */}
-        <div className="text-center mb-8 animate-scale-in">
-          <div className="neo-card p-6 inline-block organic-shape-1 mb-4">
-            <h1 className="text-4xl font-bold text-primary">
+        <div className="text-center mb-3 animate-scale-in flex-shrink-0">
+          <div className="neo-card p-3 inline-block organic-shape-1 mb-2">
+            <h1 className="text-2xl font-bold text-primary">
               🎭 Les votes
             </h1>
           </div>
-          <p className="text-primary font-bold text-lg">
+          <p className="text-primary font-bold text-sm">
             {currentResult.question.text}
           </p>
         </div>
 
         {/* Liste des votes révélés */}
-        <div className="space-y-5">
+        <div className="neo-scroll-container flex-1 min-h-0 overflow-y-auto mb-3 pr-2">
+          <div className="space-y-3">
           {revealedVotes.map((vote, index) => {
             const isMe = vote.voterId === socket?.id;
             const votedForMe = vote.votedForId === socket?.id;
@@ -131,14 +132,14 @@ export default function VoteReveal() {
             return (
               <div
                 key={`${vote.voterId}-${index}`}
-                className="neo-card p-6 vote-card-enter hover-lift"
+                className="neo-card p-3 vote-card-enter hover-lift"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-3">
                   {/* Votant */}
-                  <div className="flex items-center gap-3 flex-1">
+                  <div className="flex items-center gap-2 flex-1">
                     {vote.voterAvatar ? (
-                      <div className="neo-avatar w-16 h-16">
+                      <div className="neo-avatar w-12 h-12">
                         <img
                           src={vote.voterAvatar}
                           alt={vote.voterName}
@@ -146,41 +147,41 @@ export default function VoteReveal() {
                         />
                       </div>
                     ) : (
-                      <div className="neo-avatar w-16 h-16 flex items-center justify-center">
-                        <div className="bg-accent-gradient w-full h-full flex items-center justify-center text-white font-bold text-2xl" style={{ borderRadius: 'inherit' }}>
+                      <div className="neo-avatar w-12 h-12 flex items-center justify-center">
+                        <div className="bg-accent-gradient w-full h-full flex items-center justify-center text-white font-bold text-base" style={{ borderRadius: 'inherit' }}>
                           {vote.voterName[0].toUpperCase()}
                         </div>
                       </div>
                     )}
                     <div>
-                      <p className="font-bold text-lg text-primary">
+                      <p className="font-bold text-sm text-primary">
                         {vote.voterName}
                         {isMe && <span className="text-xs text-secondary ml-1">(Toi)</span>}
                       </p>
-                      <p className="text-sm text-secondary font-semibold">→ A voté pour</p>
+                      <p className="text-xs text-secondary font-semibold">→ A voté pour</p>
                     </div>
                   </div>
 
                   {/* Flèche */}
-                  <div className="text-4xl text-accent font-bold">
+                  <div className="text-2xl text-accent font-bold">
                     →
                   </div>
 
                   {/* Destinataire */}
-                  <div className="flex items-center gap-3 flex-1 justify-end">
+                  <div className="flex items-center gap-2 flex-1 justify-end">
                     <div className="text-right">
-                      <p className="font-bold text-lg text-primary">
+                      <p className="font-bold text-sm text-primary">
                         {vote.votedForName}
                         {votedForMe && <span className="text-xs text-secondary ml-1">(Toi!)</span>}
                       </p>
                       {votedForMe && (
-                        <p className="text-sm font-bold text-accent">
+                        <p className="text-xs font-bold text-accent">
                           🎉 +1 vote
                         </p>
                       )}
                     </div>
                     {vote.votedForAvatar ? (
-                      <div className={`neo-avatar w-16 h-16 ${votedForMe ? 'animate-glow-soft' : ''}`}>
+                      <div className={`neo-avatar w-12 h-12 ${votedForMe ? 'animate-glow-soft' : ''}`}>
                         <img
                           src={vote.votedForAvatar}
                           alt={vote.votedForName}
@@ -188,8 +189,8 @@ export default function VoteReveal() {
                         />
                       </div>
                     ) : (
-                      <div className={`neo-avatar w-16 h-16 flex items-center justify-center ${votedForMe ? 'animate-glow-soft' : ''}`}>
-                        <div className={`w-full h-full flex items-center justify-center font-bold text-2xl ${votedForMe ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
+                      <div className={`neo-avatar w-12 h-12 flex items-center justify-center ${votedForMe ? 'animate-glow-soft' : ''}`}>
+                        <div className={`w-full h-full flex items-center justify-center font-bold text-base ${votedForMe ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
                           {vote.votedForName[0].toUpperCase()}
                         </div>
                       </div>
@@ -199,15 +200,16 @@ export default function VoteReveal() {
               </div>
             );
           })}
+          </div>
         </div>
 
         {/* Indicateur de progression */}
         {isCountdownDone && !isComplete && (
-          <div className="mt-8 text-center animate-slide-in">
-            <p className="text-primary font-bold mb-4 text-lg">
+          <div className="text-center animate-slide-in flex-shrink-0 mb-3">
+            <p className="text-primary font-bold mb-2 text-sm">
               {revealedVotes.length} / {voteItems.length}
             </p>
-            <div className="neo-progress-bar h-4 max-w-md mx-auto">
+            <div className="neo-progress-bar h-2 max-w-md mx-auto">
               <div
                 className="neo-progress-fill"
                 style={{
@@ -220,12 +222,12 @@ export default function VoteReveal() {
 
         {/* Message de fin */}
         {isComplete && (
-          <div className="mt-8 text-center animate-scale-in">
-            <div className="neo-card p-8">
-              <p className="text-3xl font-bold text-primary mb-3">
+          <div className="text-center animate-scale-in flex-shrink-0">
+            <div className="neo-card p-4">
+              <p className="text-2xl font-bold text-primary mb-2">
                 ✨ Terminé ! ✨
               </p>
-              <p className="text-secondary font-semibold">
+              <p className="text-secondary font-semibold text-sm">
                 → Résultats
               </p>
             </div>

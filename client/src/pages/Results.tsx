@@ -59,29 +59,30 @@ export default function Results() {
   };
 
   return (
-    <div className="neo-container min-h-screen flex items-center justify-center p-4">
+    <div className="neo-container h-screen flex items-center justify-center p-4">
       {/* Indicateur */}
-      <div className="fixed top-6 left-6 z-20 animate-slide-in">
-        <div className="neo-card px-4 py-3">
+      <div className="fixed top-4 left-4 z-20 animate-slide-in">
+        <div className="neo-card px-3 py-2">
           <div className="flex items-center gap-2">
             <div className={`neo-indicator ${isFinished ? 'animate-glow-soft' : ''}`}></div>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-xs font-semibold text-primary">
               {isFinished ? '🎉 Terminé' : '📊 Résultats'}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl w-full relative z-10">
+      <div className="max-w-5xl w-full h-full relative z-10 flex flex-col py-4">
         {/* Question */}
-        <div className="neo-card p-6 mb-8 animate-scale-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-primary leading-tight">
+        <div className="neo-card p-3 mb-3 animate-scale-in flex-shrink-0">
+          <h2 className="text-xl md:text-2xl font-bold text-center text-primary leading-tight">
             {currentResult.question.text}
           </h2>
         </div>
 
         {/* Classement complet */}
-        <div className="space-y-4 mb-8">
+        <div className="neo-scroll-container flex-1 min-h-0 overflow-y-auto mb-3 pr-2">
+          <div className="space-y-2">
           {ranking.map((item, index) => {
             const rank = getRank(index);
             const medal = getMedal(rank, item.votes);
@@ -109,23 +110,23 @@ export default function Results() {
                   />
 
                   {/* Contenu */}
-                  <div className="relative flex items-center justify-between p-5">
-                    <div className="flex items-center gap-4">
+                  <div className="relative flex items-center justify-between p-3">
+                    <div className="flex items-center gap-3">
                       {/* Position */}
                       <div className="flex flex-col items-center gap-1">
                         {medal && (
-                          <div className="text-3xl animate-pulse-soft">
+                          <div className="text-xl animate-pulse-soft">
                             {medal}
                           </div>
                         )}
-                        <div className={`text-2xl font-bold px-4 py-2 rounded-full ${isTopThree ? 'neo-badge' : 'neo-pressed text-primary'}`}>
+                        <div className={`text-base font-bold px-3 py-1 rounded-full ${isTopThree ? 'neo-badge' : 'neo-pressed text-primary'}`}>
                           #{rank}
                         </div>
                       </div>
 
                       {/* Avatar */}
                       {item.player.avatar ? (
-                        <div className="neo-avatar w-20 h-20">
+                        <div className="neo-avatar w-12 h-12">
                           <img
                             src={item.player.avatar}
                             alt={item.player.name}
@@ -133,8 +134,8 @@ export default function Results() {
                           />
                         </div>
                       ) : (
-                        <div className="neo-avatar w-20 h-20 flex items-center justify-center">
-                          <div className={`w-full h-full flex items-center justify-center font-bold text-3xl ${isTopThree ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
+                        <div className="neo-avatar w-12 h-12 flex items-center justify-center">
+                          <div className={`w-full h-full flex items-center justify-center font-bold text-lg ${isTopThree ? 'bg-accent-gradient text-white' : 'bg-accent-gradient text-white'}`} style={{ borderRadius: 'inherit' }}>
                             {item.player.name[0].toUpperCase()}
                           </div>
                         </div>
@@ -142,17 +143,17 @@ export default function Results() {
 
                       {/* Nom et votes */}
                       <div>
-                        <p className="font-bold text-xl text-primary">
+                        <p className="font-bold text-base text-primary">
                           {item.player.name}
                         </p>
-                        <p className="text-sm font-semibold text-secondary">
+                        <p className="text-xs font-semibold text-secondary">
                           {item.votes} vote{item.votes > 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
 
                     {/* Score */}
-                    <div className={`text-5xl font-bold px-4 py-2 ${isTopThree ? 'text-accent' : 'text-primary'}`}>
+                    <div className={`text-3xl font-bold px-2 ${isTopThree ? 'text-accent' : 'text-primary'}`}>
                       {item.votes}
                     </div>
                   </div>
@@ -160,13 +161,14 @@ export default function Results() {
               </div>
             );
           })}
+          </div>
         </div>
 
         {/* Gestion égalités */}
         {ranking.filter(r => r.votes === ranking[0].votes && r.votes > 0).length > 1 && (
-          <div className="neo-card p-5 mb-8 animate-slide-in">
-            <p className="text-center font-bold text-primary flex items-center justify-center gap-2">
-              <span className="text-2xl">⚠️</span>
+          <div className="neo-card p-3 mb-3 animate-slide-in flex-shrink-0">
+            <p className="text-center font-bold text-sm text-primary flex items-center justify-center gap-2">
+              <span className="text-base">⚠️</span>
               <span>Égalité !</span>
             </p>
           </div>
@@ -174,9 +176,9 @@ export default function Results() {
 
         {/* Personne n'a voté */}
         {ranking.every(r => r.votes === 0) && (
-          <div className="neo-card p-5 mb-8 animate-slide-in">
-            <p className="text-center font-bold text-primary flex items-center justify-center gap-2">
-              <span className="text-2xl">🤷</span>
+          <div className="neo-card p-3 mb-3 animate-slide-in flex-shrink-0">
+            <p className="text-center font-bold text-sm text-primary flex items-center justify-center gap-2">
+              <span className="text-base">🤷</span>
               <span>Aucun vote !</span>
             </p>
           </div>
@@ -184,24 +186,24 @@ export default function Results() {
 
         {/* Boutons */}
         {isHost && (
-          <div className="neo-card p-6 animate-scale-in">
+          <div className="neo-card p-4 animate-scale-in flex-shrink-0">
             {isFinished ? (
               <button
                 onClick={handleBackToLobby}
-                className="w-full neo-button-accent font-bold text-2xl py-6 px-8 text-white"
+                className="w-full neo-button-accent font-bold text-xl py-4 px-6 text-white"
               >
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl">🔄</span>
+                  <span className="text-2xl">🔄</span>
                   <span>Retour au lobby</span>
                 </div>
               </button>
             ) : (
               <button
                 onClick={handleNextQuestion}
-                className="w-full neo-button-accent font-bold text-2xl py-6 px-8 text-white"
+                className="w-full neo-button-accent font-bold text-xl py-4 px-6 text-white"
               >
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl">➡️</span>
+                  <span className="text-2xl">➡️</span>
                   <span>Question suivante</span>
                 </div>
               </button>
@@ -210,16 +212,16 @@ export default function Results() {
         )}
 
         {!isHost && (
-          <div className="neo-card p-6 animate-scale-in">
-            <p className="text-center text-primary font-bold text-xl flex items-center justify-center gap-3">
+          <div className="neo-card p-4 animate-scale-in flex-shrink-0">
+            <p className="text-center text-primary font-bold text-base flex items-center justify-center gap-2">
               {isFinished ? (
                 <>
-                  <span className="text-3xl">🎉</span>
+                  <span className="text-2xl">🎉</span>
                   <span>Merci !</span>
                 </>
               ) : (
                 <>
-                  <span className="text-3xl animate-pulse-soft">⏳</span>
+                  <span className="text-2xl animate-pulse-soft">⏳</span>
                   <span>En attente...</span>
                 </>
               )}
