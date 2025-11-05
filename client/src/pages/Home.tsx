@@ -78,20 +78,13 @@ export default function Home() {
       <div className="fixed top-1/2 right-16 w-24 h-24 organic-shape-3 bg-accent opacity-10 animate-float-soft" style={{ animationDelay: '2s' }}></div>
 
       <div className="max-w-md w-full relative z-10 animate-scale-in">
-        {/* Logo et titre */}
+        {/* Logo */}
         <div className="text-center mb-12">
-          <div className="inline-block mb-8 animate-float-soft">
+          <div className="inline-block animate-float-soft">
             <div className="neo-card p-6 organic-shape-1">
               <img src="/logo.png" alt="Logo" className="w-32 h-32 mx-auto" />
             </div>
           </div>
-
-          <h1 className="text-5xl font-bold mb-4 text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
-            Qui Est Le +
-          </h1>
-          <p className="text-secondary text-base font-medium">
-            Le jeu pour mieux se connaître
-          </p>
         </div>
 
         {/* Menu principal */}
