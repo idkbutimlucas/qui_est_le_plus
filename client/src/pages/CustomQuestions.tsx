@@ -78,7 +78,7 @@ export default function CustomQuestions() {
         <div className="neo-card px-4 py-3">
           <div className="flex items-center gap-2">
             <div className="neo-indicator"></div>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-base font-semibold text-primary">
               ✏️ Questions personnalisées
             </p>
           </div>
@@ -93,11 +93,11 @@ export default function CustomQuestions() {
               <h1 className="text-2xl font-bold text-primary mb-2">
                 Créez vos questions
               </h1>
-              <p className="text-secondary font-medium text-sm">
+              <p className="text-secondary font-medium text-base">
                 Tous les joueurs peuvent ajouter des adjectifs
               </p>
             </div>
-            <div className="neo-badge text-sm">
+            <div className="neo-badge text-base">
               {questionsCompleted} / {numberOfQuestions}
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function CustomQuestions() {
           <form onSubmit={handleAddQuestion}>
             <div className="flex gap-2">
               <div className="flex-1 relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-sm font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
                   Qui est le plus
                 </span>
                 <input
@@ -117,7 +117,7 @@ export default function CustomQuestions() {
                   onChange={(e) => setCurrentAdjective(e.target.value)}
                   placeholder="drôle..."
                   disabled={isComplete}
-                  className="neo-input w-full pl-36 pr-10 text-primary font-medium text-sm"
+                  className="neo-input w-full pl-36 pr-10 text-primary font-medium text-base"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
                   ?
@@ -126,7 +126,7 @@ export default function CustomQuestions() {
               <button
                 type="submit"
                 disabled={!currentAdjective.trim() || isComplete}
-                className="neo-button-accent px-6 py-3 text-sm font-semibold text-white"
+                className="neo-button-accent px-6 py-3 text-base font-semibold text-white"
               >
                 +
               </button>
@@ -141,7 +141,7 @@ export default function CustomQuestions() {
           </h2>
           {customQuestions.length === 0 ? (
             <div className="neo-pressed p-4 text-center">
-              <p className="text-secondary font-medium text-sm">
+              <p className="text-secondary font-medium text-base">
                 Aucune question pour le moment
               </p>
             </div>
@@ -153,12 +153,12 @@ export default function CustomQuestions() {
                   key={index}
                   className="neo-card p-3 flex items-center justify-between hover-lift"
                 >
-                  <p className="font-semibold text-sm text-primary">
+                  <p className="font-semibold text-base text-primary">
                     {index + 1}. Qui est le plus <span className="text-accent font-bold">{adjective}</span> ?
                   </p>
                   <button
                     onClick={() => handleRemoveQuestion(index)}
-                    className="neo-button p-2 text-red-500 hover:text-red-600 text-sm"
+                    className="neo-button p-2 text-red-500 hover:text-red-600 text-base"
                   >
                     ✕
                   </button>

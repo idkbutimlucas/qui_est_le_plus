@@ -117,7 +117,7 @@ export default function VoteReveal() {
               🎭 Les votes
             </h1>
           </div>
-          <p className="text-primary font-bold text-sm">
+          <p className="text-primary font-bold text-base">
             {currentResult.question.text}
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function VoteReveal() {
                       </div>
                     )}
                     <div>
-                      <p className="font-bold text-sm text-primary">
+                      <p className="font-bold text-base text-primary">
                         {vote.voterName}
                         {isMe && <span className="text-xs text-secondary ml-1">(Toi)</span>}
                       </p>
@@ -170,7 +170,7 @@ export default function VoteReveal() {
                   {/* Destinataire */}
                   <div className="flex items-center gap-2 flex-1 justify-end">
                     <div className="text-right">
-                      <p className="font-bold text-sm text-primary">
+                      <p className="font-bold text-base text-primary">
                         {vote.votedForName}
                         {votedForMe && <span className="text-xs text-secondary ml-1">(Toi!)</span>}
                       </p>
@@ -206,7 +206,7 @@ export default function VoteReveal() {
         {/* Indicateur de progression */}
         {isCountdownDone && !isComplete && (
           <div className="text-center animate-slide-in flex-shrink-0 mb-3">
-            <p className="text-primary font-bold mb-2 text-sm">
+            <p className="text-primary font-bold mb-2 text-base">
               {revealedVotes.length} / {voteItems.length}
             </p>
             <div className="neo-progress-bar h-2 max-w-md mx-auto">
@@ -227,7 +227,7 @@ export default function VoteReveal() {
               <p className="text-2xl font-bold text-primary mb-2">
                 ✨ Terminé ! ✨
               </p>
-              <p className="text-secondary font-semibold text-sm">
+              <p className="text-secondary font-semibold text-base">
                 → Résultats
               </p>
             </div>

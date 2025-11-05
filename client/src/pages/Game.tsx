@@ -162,7 +162,7 @@ export default function Game() {
                 </div>
 
                 {/* Nom du joueur */}
-                <p className={`font-bold text-center text-sm ${isSelected ? 'text-accent' : 'text-primary'}`}>
+                <p className={`font-bold text-center text-base ${isSelected ? 'text-accent' : 'text-primary'}`}>
                   {player.name}
                   {isCurrentPlayer && (
                     <span className="block text-xs text-secondary mt-0.5">
@@ -179,7 +179,7 @@ export default function Game() {
         {hasVoted && votedCount < totalPlayers && (
           <div className="neo-card p-3 animate-slide-in flex-shrink-0">
             <div className="text-center mb-2">
-              <p className="text-primary font-bold text-sm mb-2 flex items-center justify-center gap-2">
+              <p className="text-primary font-bold text-base mb-2 flex items-center justify-center gap-2">
                 <span className="text-base animate-pulse-soft">⏳</span>
                 <span>En attente des autres joueurs...</span>
               </p>

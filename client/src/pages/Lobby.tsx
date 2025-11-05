@@ -135,7 +135,7 @@ export default function Lobby() {
 
                   <button
                     onClick={copyCode}
-                    className={`neo-button px-3 py-2 text-sm font-semibold transition-all ${copied ? 'animate-pulse-soft' : ''}`}
+                    className={`neo-button px-3 py-2 text-base font-semibold transition-all ${copied ? 'animate-pulse-soft' : ''}`}
                     title="Copier le code"
                   >
                     {copied ? '✓' : '📋'}
@@ -145,7 +145,7 @@ export default function Lobby() {
             </div>
             <button
               onClick={handleLeaveRoom}
-              className="neo-button px-4 py-2 text-sm font-semibold text-primary hover-lift"
+              className="neo-button px-4 py-2 text-base font-semibold text-primary hover-lift"
             >
               ✕ Quitter
             </button>
@@ -159,7 +159,7 @@ export default function Lobby() {
               <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
                 Joueurs
               </h2>
-              <div className="neo-badge text-sm">
+              <div className="neo-badge text-base">
                 {room.players.length}
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function Lobby() {
                       className="neo-button p-2 text-red-500 hover:text-red-600"
                       title="Expulser ce joueur"
                     >
-                      <span className="text-sm">✕</span>
+                      <span className="text-base">✕</span>
                     </button>
                   )}
                 </div>
@@ -250,7 +250,7 @@ export default function Lobby() {
                   </div>
                 </div>
               ) : (
-                <div className="neo-pressed px-4 py-2 text-sm font-semibold text-primary">
+                <div className="neo-pressed px-4 py-2 text-base font-semibold text-primary">
                   {numberOfQuestions} questions
                 </div>
               )}
@@ -268,7 +268,7 @@ export default function Lobby() {
                     {isHost && showSettings ? (
                       <button
                         onClick={() => handleCategoryToggle(category)}
-                        className={`w-full px-4 py-2 text-sm font-semibold transition-all hover-lift ${
+                        className={`w-full px-4 py-2 text-base font-semibold transition-all hover-lift ${
                           selectedCategories.includes(category)
                             ? 'neo-button-accent text-white'
                             : 'neo-button text-primary'
@@ -281,7 +281,7 @@ export default function Lobby() {
                       </button>
                     ) : (
                       selectedCategories.includes(category) && (
-                        <div className="neo-pressed px-4 py-2 text-sm font-semibold text-primary">
+                        <div className="neo-pressed px-4 py-2 text-base font-semibold text-primary">
                           {categoryLabels[category]}
                         </div>
                       )

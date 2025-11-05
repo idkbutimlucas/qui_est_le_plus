@@ -167,7 +167,7 @@ export default function Results() {
         {/* Gestion égalités */}
         {ranking.filter(r => r.votes === ranking[0].votes && r.votes > 0).length > 1 && (
           <div className="neo-card p-3 mb-3 animate-slide-in flex-shrink-0">
-            <p className="text-center font-bold text-sm text-primary flex items-center justify-center gap-2">
+            <p className="text-center font-bold text-base text-primary flex items-center justify-center gap-2">
               <span className="text-base">⚠️</span>
               <span>Égalité !</span>
             </p>
@@ -177,7 +177,7 @@ export default function Results() {
         {/* Personne n'a voté */}
         {ranking.every(r => r.votes === 0) && (
           <div className="neo-card p-3 mb-3 animate-slide-in flex-shrink-0">
-            <p className="text-center font-bold text-sm text-primary flex items-center justify-center gap-2">
+            <p className="text-center font-bold text-base text-primary flex items-center justify-center gap-2">
               <span className="text-base">🤷</span>
               <span>Aucun vote !</span>
             </p>

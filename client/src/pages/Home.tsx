@@ -138,14 +138,14 @@ export default function Home() {
 
             {error && (
               <div className="neo-pressed p-4">
-                <p className="text-red-600 font-semibold text-center text-sm">
+                <p className="text-red-600 font-semibold text-center text-base">
                   {error}
                 </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="block text-secondary font-semibold text-sm">
+              <label className="block text-secondary font-semibold text-base">
                 Ton nom
               </label>
               <input
@@ -159,7 +159,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-secondary font-semibold text-sm">
+              <label className="block text-secondary font-semibold text-base">
                 Photo (optionnel)
               </label>
               <div className="flex items-center gap-4">
@@ -214,14 +214,14 @@ export default function Home() {
 
             {error && (
               <div className="neo-pressed p-4">
-                <p className="text-red-600 font-semibold text-center text-sm">
+                <p className="text-red-600 font-semibold text-center text-base">
                   {error}
                 </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="block text-secondary font-semibold text-sm">
+              <label className="block text-secondary font-semibold text-base">
                 Code de la partie
               </label>
               <div className="neo-card p-6 text-center organic-shape-1">
@@ -238,7 +238,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-secondary font-semibold text-sm">
+              <label className="block text-secondary font-semibold text-base">
                 Ton nom
               </label>
               <input
@@ -252,7 +252,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-secondary font-semibold text-sm">
+              <label className="block text-secondary font-semibold text-base">
                 Photo (optionnel)
               </label>
               <div className="flex items-center gap-4">
