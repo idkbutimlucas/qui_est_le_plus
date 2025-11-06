@@ -43,8 +43,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     });
 
     newSocket.on('room:updated', (room: Room) => {
-      console.log('[CLIENT] room:updated reçu - Code:', room.code, 'Votes:', Object.keys(room.votes).length, '/', room.players.length);
-      console.log('[CLIENT] Votes détails:', room.votes);
       setRoom(room);
     });
 
@@ -95,7 +93,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   };
 
   const vote = (targetPlayerId: string) => {
-    console.log('[CLIENT] Émission du vote pour:', targetPlayerId);
     socket?.emit('game:vote', targetPlayerId);
   };
 

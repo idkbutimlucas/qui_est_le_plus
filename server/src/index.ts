@@ -22,15 +22,12 @@ const roomManager = new RoomManager();
 
 // Socket.io connection
 io.on('connection', (socket) => {
-  console.log(`Client connecté: ${socket.id}`);
-
   // Créer une room
   socket.on('room:create', (playerName, avatar) => {
     try {
       const room = roomManager.createRoom(socket.id, playerName, avatar);
       socket.join(room.code);
       socket.emit('room:joined', room);
-      console.log(`Room créée: ${room.code} par ${playerName}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de la création de la room');
     }
@@ -50,8 +47,6 @@ io.on('connection', (socket) => {
 
       // Notifier tous les joueurs de la room
       io.to(room.code).emit('room:updated', room);
-
-      console.log(`${playerName} a rejoint la room ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de la connexion à la room');
     }
@@ -67,7 +62,6 @@ io.on('connection', (socket) => {
       }
 
       io.to(room.code).emit('room:updated', room);
-      console.log(`Settings mis à jour pour la room ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de la mise à jour des settings');
     }
@@ -80,7 +74,6 @@ io.on('connection', (socket) => {
       if (room) {
         socket.leave(room.code);
         io.to(room.code).emit('room:updated', room);
-        console.log(`Joueur ${socket.id} a quitté la room ${room.code}`);
 
         // Si le jeu est en cours, vérifier si tout le monde a voté
         if (room.status === 'playing' && roomManager.hasEveryoneVoted(room.code)) {
@@ -88,12 +81,11 @@ io.on('connection', (socket) => {
           if (result) {
             io.to(room.code).emit('room:updated', room);
             io.to(room.code).emit('game:results', result);
-            console.log(`Résultats calculés après départ d'un joueur dans la room ${room.code}`);
           }
         }
       }
     } catch (error) {
-      console.error('Erreur lors du départ de la room:', error);
+      // Error handled silently
     }
   });
 
@@ -118,15 +110,12 @@ io.on('connection', (socket) => {
       // Notifier tous les autres joueurs de la mise à jour
       io.to(room.code).emit('room:updated', room);
 
-      console.log(`Joueur ${playerIdToKick} expulsé de la room ${room.code} par l'hôte`);
-
       // Si le jeu est en cours, vérifier si tout le monde a voté
       if (room.status === 'playing' && roomManager.hasEveryoneVoted(room.code)) {
         const result = roomManager.calculateResults(room.code);
         if (result) {
           io.to(room.code).emit('room:updated', room);
           io.to(room.code).emit('game:results', result);
-          console.log(`Résultats calculés après expulsion dans la room ${room.code}`);
         }
       }
     } catch (error) {
@@ -154,8 +143,6 @@ io.on('connection', (socket) => {
 
       // Notifier tous les joueurs de la mise à jour avec le nouveau code
       io.to(room.code).emit('room:updated', room);
-
-      console.log(`Code régénéré pour la room: ${oldCode} -> ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de la régénération du code');
     }
@@ -174,11 +161,8 @@ io.on('connection', (socket) => {
       io.to(room.code).emit('room:updated', room);
 
       // Si c'est une catégorie custom, on ne démarre pas directement le jeu
-      if (room.status === 'custom-questions') {
-        console.log(`Mode questions personnalisées activé pour la room ${room.code}`);
-      } else if (question) {
+      if (room.status !== 'custom-questions' && question) {
         io.to(room.code).emit('game:question', question);
-        console.log(`Jeu démarré dans la room ${room.code}`);
       }
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du démarrage du jeu');
@@ -196,7 +180,6 @@ io.on('connection', (socket) => {
 
       io.to(room.code).emit('room:updated', room);
       io.to(room.code).emit('custom:questionsUpdated', room.customQuestions || []);
-      console.log(`Question custom ajoutée dans la room ${room.code}: ${adjective}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de l\'ajout de la question');
     }
@@ -213,7 +196,6 @@ io.on('connection', (socket) => {
 
       io.to(room.code).emit('room:updated', room);
       io.to(room.code).emit('custom:questionsUpdated', room.customQuestions || []);
-      console.log(`Question custom supprimée dans la room ${room.code} à l'index ${index}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors de la suppression de la question');
     }
@@ -231,8 +213,6 @@ io.on('connection', (socket) => {
       const { room, question } = result;
       io.to(room.code).emit('room:updated', room);
       io.to(room.code).emit('game:question', question);
-
-      console.log(`Jeu démarré avec questions custom dans la room ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du démarrage du jeu');
     }
@@ -241,41 +221,23 @@ io.on('connection', (socket) => {
   // Voter
   socket.on('game:vote', (targetPlayerId) => {
     try {
-      console.log(`[VOTE] ${socket.id} vote pour ${targetPlayerId}`);
-
-      // Vérifier les rooms du socket
-      const socketRooms = Array.from(socket.rooms);
-      console.log(`[VOTE] Socket rooms:`, socketRooms);
-
       const room = roomManager.vote(socket.id, targetPlayerId);
       if (!room) {
         socket.emit('room:error', 'Vote impossible');
         return;
       }
 
-      const votesCount = Object.keys(room.votes).length;
-      console.log(`[VOTE] Room ${room.code} - Votes actuels: ${votesCount}/${room.players.length}`);
-      console.log(`[VOTE] Votes:`, room.votes);
-
-      // Vérifier combien de sockets sont dans la room
-      const socketsInRoom = io.sockets.adapter.rooms.get(room.code);
-      console.log(`[VOTE] Nombre de sockets dans la room ${room.code}:`, socketsInRoom?.size || 0);
-
       // Émettre immédiatement la mise à jour pour tous les joueurs
       io.to(room.code).emit('room:updated', room);
-
-      console.log(`[VOTE] room:updated émis à tous les joueurs de ${room.code}`);
 
       // Vérifier si tout le monde a voté
       if (roomManager.hasEveryoneVoted(room.code)) {
         const result = roomManager.calculateResults(room.code);
         if (result) {
           io.to(room.code).emit('game:results', result);
-          console.log(`Résultats calculés pour la room ${room.code}`);
         }
       }
     } catch (error) {
-      console.error('[VOTE] Erreur lors du vote:', error);
       socket.emit('room:error', 'Erreur lors du vote');
     }
   });
@@ -294,10 +256,8 @@ io.on('connection', (socket) => {
 
       if (finished) {
         io.to(room.code).emit('game:finished', room.results);
-        console.log(`Jeu terminé dans la room ${room.code}`);
       } else if (question) {
         io.to(room.code).emit('game:question', question);
-        console.log(`Nouvelle question dans la room ${room.code}`);
       }
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du passage à la question suivante');
@@ -314,7 +274,6 @@ io.on('connection', (socket) => {
       }
 
       io.to(room.code).emit('room:updated', room);
-      console.log(`Retour au lobby pour la room ${room.code}`);
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du retour au lobby');
     }
@@ -333,13 +292,11 @@ io.on('connection', (socket) => {
           if (result) {
             io.to(room.code).emit('room:updated', room);
             io.to(room.code).emit('game:results', result);
-            console.log(`Résultats calculés après déconnexion d'un joueur dans la room ${room.code}`);
           }
         }
       }
-      console.log(`Client déconnecté: ${socket.id}`);
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      // Error handled silently
     }
   });
 });
@@ -362,6 +319,4 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
-});
+httpServer.listen(PORT);

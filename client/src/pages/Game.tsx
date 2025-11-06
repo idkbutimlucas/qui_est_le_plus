@@ -129,7 +129,7 @@ export default function Game() {
                 key={player.id}
                 onClick={() => handleVote(player.id)}
                 disabled={!!currentResult}
-                className={`neo-card p-3 transition-all duration-300 animate-slide-in hover-lift h-fit ${
+                className={`neo-card p-3 transition-all duration-300 animate-slide-in hover-lift h-[140px] flex flex-col items-center justify-center ${
                   isSelected
                     ? 'animate-glow-soft'
                     : ''
@@ -143,9 +143,9 @@ export default function Game() {
                 )}
 
                 {/* Avatar */}
-                <div className="mb-2">
+                <div className="mb-2 flex-shrink-0">
                   {player.avatar ? (
-                    <div className="neo-avatar mx-auto w-16 h-16">
+                    <div className="neo-avatar w-16 h-16">
                       <img
                         src={player.avatar}
                         alt={player.name}
@@ -153,7 +153,7 @@ export default function Game() {
                       />
                     </div>
                   ) : (
-                    <div className="neo-avatar mx-auto w-16 h-16 flex items-center justify-center">
+                    <div className="neo-avatar w-16 h-16 flex items-center justify-center">
                       <div className="bg-accent-gradient w-full h-full flex items-center justify-center text-white font-bold text-2xl" style={{ borderRadius: 'inherit' }}>
                         {player.name[0].toUpperCase()}
                       </div>

@@ -84,8 +84,8 @@ export default function Results() {
 
         {/* Classement complet */}
         <div className="neo-scroll-container flex-1 min-h-0 overflow-y-auto mb-3 pr-2">
-          <div className="space-y-2">
-          {ranking.map((item, index) => {
+            <div className="space-y-2">
+            {ranking.map((item, index) => {
             const rank = getRank(index);
             const medal = getMedal(rank, item.votes);
             const barWidth = ranking[0].votes > 0
@@ -96,10 +96,14 @@ export default function Results() {
             return (
               <div
                 key={item.player.id}
-                className={`neo-card overflow-hidden hover-lift animate-slide-in ${isTopThree ? 'animate-glow-soft' : ''}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className={`neo-card hover-lift animate-slide-in ${isTopThree ? 'animate-glow-soft' : ''}`}
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                  overflow: 'visible',
+                  margin: isTopThree ? '8px 0' : '0'
+                }}
               >
-                <div className="relative">
+                <div className="relative overflow-hidden rounded-[30px]">
                   {/* Barre de fond */}
                   <div
                     className="absolute top-0 left-0 h-full transition-all duration-1000 ease-out"
@@ -163,7 +167,7 @@ export default function Results() {
               </div>
             );
           })}
-          </div>
+            </div>
         </div>
 
         {/* Gestion égalités */}

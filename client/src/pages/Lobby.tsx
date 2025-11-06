@@ -101,7 +101,7 @@ export default function Lobby() {
         <div className="neo-card p-4 mb-4 flex-shrink-0">
           <div className="flex justify-between items-center flex-wrap gap-4">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold mb-3 text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
+              <h1 className="text-3xl font-bold mb-3 text-primary" style={{ fontFamily: 'KGPerfectPenmanship, sans-serif' }}>
                 Lobby
               </h1>
               <div className="flex items-center gap-3 flex-wrap">
@@ -156,7 +156,7 @@ export default function Lobby() {
           {/* Liste des joueurs */}
           <div className="neo-card p-4 flex flex-col min-h-0">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
+              <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'KGPerfectPenmanship, sans-serif' }}>
                 Joueurs
               </h2>
               <div className="neo-badge text-base">
@@ -211,7 +211,7 @@ export default function Lobby() {
           {/* Settings */}
           <div className="neo-card p-4 flex flex-col min-h-0">
             <div className="flex justify-between items-center mb-3 flex-shrink-0">
-              <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
+              <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'KGPerfectPenmanship, sans-serif' }}>
                 Paramètres
               </h2>
               {isHost && (
