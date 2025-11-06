@@ -154,7 +154,7 @@ export default function Lobby() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 flex-1 min-h-0">
           {/* Liste des joueurs */}
-          <div className="neo-card p-4 flex flex-col">
+          <div className="neo-card p-4 flex flex-col min-h-0">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
                 Joueurs
@@ -163,7 +163,7 @@ export default function Lobby() {
                 {room.players.length}
               </div>
             </div>
-            <div className="neo-scroll-container flex-1 overflow-y-auto">
+            <div className="neo-scroll-container flex-1 min-h-0 overflow-y-auto">
               <div className="space-y-3 pr-2">
               {room.players.map((player) => (
                 <div
@@ -209,7 +209,7 @@ export default function Lobby() {
           </div>
 
           {/* Settings */}
-          <div className="neo-card p-4 flex flex-col">
+          <div className="neo-card p-4 flex flex-col min-h-0">
             <div className="flex justify-between items-center mb-3 flex-shrink-0">
               <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Papernotes, sans-serif' }}>
                 Paramètres
@@ -261,7 +261,7 @@ export default function Lobby() {
               <div className="neo-badge text-xs mb-2 inline-block flex-shrink-0">
                 Catégories
               </div>
-              <div className="neo-scroll-container flex-1 overflow-y-auto">
+              <div className="neo-scroll-container flex-1 min-h-0 overflow-y-auto">
                 <div className="space-y-2 pr-2">
                 {categories.map((category) => (
                   <div key={category}>
