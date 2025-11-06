@@ -14,4 +14,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd server && NODE_ENV=production npm start"
+cmd = "NODE_ENV=production node server/dist/index.js"
