@@ -247,11 +247,13 @@ io.on('connection', (socket) => {
         return;
       }
 
+      // Émettre immédiatement la mise à jour pour tous les joueurs
+      io.to(room.code).emit('room:updated', room);
+
       // Vérifier si tout le monde a voté
       if (roomManager.hasEveryoneVoted(room.code)) {
         const result = roomManager.calculateResults(room.code);
         if (result) {
-          io.to(room.code).emit('room:updated', room);
           io.to(room.code).emit('game:results', result);
           console.log(`Résultats calculés pour la room ${room.code}`);
         }
