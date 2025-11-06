@@ -3,8 +3,8 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "npm install --prefix client",
-  "npm install --prefix server"
+  "npm ci --include=dev --prefix client",
+  "npm ci --include=dev --prefix server"
 ]
 
 [phases.build]
@@ -15,6 +15,3 @@ cmds = [
 
 [start]
 cmd = "cd server && NODE_ENV=production npm start"
-
-[variables]
-NODE_ENV = "production"
