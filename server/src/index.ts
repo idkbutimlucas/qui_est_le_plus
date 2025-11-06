@@ -241,14 +241,30 @@ io.on('connection', (socket) => {
   // Voter
   socket.on('game:vote', (targetPlayerId) => {
     try {
+      console.log(`[VOTE] ${socket.id} vote pour ${targetPlayerId}`);
+
+      // Vérifier les rooms du socket
+      const socketRooms = Array.from(socket.rooms);
+      console.log(`[VOTE] Socket rooms:`, socketRooms);
+
       const room = roomManager.vote(socket.id, targetPlayerId);
       if (!room) {
         socket.emit('room:error', 'Vote impossible');
         return;
       }
 
+      const votesCount = Object.keys(room.votes).length;
+      console.log(`[VOTE] Room ${room.code} - Votes actuels: ${votesCount}/${room.players.length}`);
+      console.log(`[VOTE] Votes:`, room.votes);
+
+      // Vérifier combien de sockets sont dans la room
+      const socketsInRoom = io.sockets.adapter.rooms.get(room.code);
+      console.log(`[VOTE] Nombre de sockets dans la room ${room.code}:`, socketsInRoom?.size || 0);
+
       // Émettre immédiatement la mise à jour pour tous les joueurs
       io.to(room.code).emit('room:updated', room);
+
+      console.log(`[VOTE] room:updated émis à tous les joueurs de ${room.code}`);
 
       // Vérifier si tout le monde a voté
       if (roomManager.hasEveryoneVoted(room.code)) {
@@ -259,6 +275,7 @@ io.on('connection', (socket) => {
         }
       }
     } catch (error) {
+      console.error('[VOTE] Erreur lors du vote:', error);
       socket.emit('room:error', 'Erreur lors du vote');
     }
   });
