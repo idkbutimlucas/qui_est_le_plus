@@ -22,8 +22,12 @@ export default function VoteReveal() {
   const [isComplete, setIsComplete] = useState(false);
 
   const [voteItems, setVoteItems] = useState<VoteRevealItem[]>([]);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    // Ne s'exécute qu'une seule fois au montage
+    if (initialized) return;
+
     if (!room || !currentResult) {
       navigate('/');
       return;
@@ -48,7 +52,8 @@ export default function VoteReveal() {
 
     const shuffled = items.sort(() => Math.random() - 0.5);
     setVoteItems(shuffled);
-  }, [room, currentResult, navigate]);
+    setInitialized(true);
+  }, [room, currentResult, navigate, initialized]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -71,18 +76,20 @@ export default function VoteReveal() {
   }, [isCountdownDone, currentRevealIndex, voteItems]);
 
   useEffect(() => {
-    if (revealedVotes.length === voteItems.length && voteItems.length > 0) {
-      setTimeout(() => {
+    if (revealedVotes.length === voteItems.length && voteItems.length > 0 && !isComplete) {
+      const timer = setTimeout(() => {
         setIsComplete(true);
       }, 1500);
+      return () => clearTimeout(timer);
     }
-  }, [revealedVotes, voteItems]);
+  }, [revealedVotes, voteItems, isComplete]);
 
   useEffect(() => {
     if (isComplete) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         navigate('/results');
       }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [isComplete, navigate]);
 

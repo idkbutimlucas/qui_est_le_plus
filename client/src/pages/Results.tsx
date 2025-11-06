@@ -14,16 +14,18 @@ export default function Results() {
       return;
     }
 
-    if (room.status === 'playing') {
-      navigate('/game');
-      return;
-    }
-
+    // Toujours rediriger vers le lobby si le statut est 'lobby'
     if (room.status === 'lobby') {
       navigate('/lobby');
       return;
     }
-  }, [room, navigate]);
+
+    // Ne rediriger vers le jeu que si on n'a pas de résultats à afficher
+    if (!currentResult && room.status === 'playing') {
+      navigate('/game');
+      return;
+    }
+  }, [room, currentResult, navigate]);
 
   const handleNextQuestion = () => {
     nextQuestion();
