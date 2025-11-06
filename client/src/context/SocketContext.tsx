@@ -23,7 +23,9 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+// En production, se connecter à l'origine actuelle, sinon localhost
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ||
+  (import.meta.env.MODE === 'production' ? undefined : 'http://localhost:3000');
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -33,7 +35,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
+    const newSocket = SOCKET_URL ? io(SOCKET_URL) : io();
     setSocket(newSocket);
 
     // Écouter les événements

@@ -1,0 +1,20 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = [
+  "npm install --prefix client",
+  "npm install --prefix server"
+]
+
+[phases.build]
+cmds = [
+  "npm run build --prefix client",
+  "npm run build --prefix server"
+]
+
+[start]
+cmd = "cd server && NODE_ENV=production npm start"
+
+[variables]
+NODE_ENV = "production"

@@ -2,8 +2,13 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { RoomManager } from './roomManager.js';
 import type { ServerToClientEvents, ClientToServerEvents } from '../../shared/types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,6 +22,12 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 
 app.use(cors());
 app.use(express.json());
+
+// Servir les fichiers statiques du client en production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.join(__dirname, '../../client/dist');
+  app.use(express.static(clientDistPath));
+}
 
 const roomManager = new RoomManager();
 
@@ -301,22 +312,33 @@ io.on('connection', (socket) => {
   });
 });
 
-// Routes
-app.get('/', (req, res) => {
+// Routes API
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.get('/api', (req, res) => {
   res.json({
     message: 'API Qui est le plus - Serveur WebSocket',
     status: 'running',
     endpoints: {
-      health: '/health',
+      health: '/api/health',
       websocket: 'ws://localhost:3000'
     }
   });
 });
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+// En production, servir le client React pour toutes les autres routes
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    const clientDistPath = path.join(__dirname, '../../client/dist');
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 
-httpServer.listen(PORT);
+httpServer.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
