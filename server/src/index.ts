@@ -25,7 +25,8 @@ app.use(express.json());
 
 // Servir les fichiers statiques du client en production
 if (process.env.NODE_ENV === 'production') {
-  const clientDistPath = path.join(__dirname, '../../client/dist');
+  // En production Docker, on remonte à la racine /app puis client/dist
+  const clientDistPath = path.join(__dirname, '../../../../client/dist');
   app.use(express.static(clientDistPath));
 }
 
@@ -331,7 +332,7 @@ app.get('/api', (req, res) => {
 // En production, servir le client React pour toutes les autres routes
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
-    const clientDistPath = path.join(__dirname, '../../client/dist');
+    const clientDistPath = path.join(__dirname, '../../../../client/dist');
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
