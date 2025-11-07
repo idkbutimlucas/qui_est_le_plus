@@ -29,4 +29,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Démarrer l'application
-CMD ["node", "server/dist/index.js"]
+CMD ["node", "server/dist/server/src/index.js"]
