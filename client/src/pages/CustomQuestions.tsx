@@ -117,7 +117,8 @@ export default function CustomQuestions() {
                   onChange={(e) => setCurrentAdjective(e.target.value)}
                   placeholder="drôle..."
                   disabled={isComplete}
-                  className="neo-input w-full pl-36 pr-10 text-primary font-medium text-base"
+                  className="neo-input w-full pr-10 text-primary font-medium text-base"
+                  style={{ paddingLeft: '125px' }}
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary text-base font-medium">
                   ?
