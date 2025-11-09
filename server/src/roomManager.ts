@@ -5,6 +5,9 @@ import { getRandomQuestions } from './data/questions.js';
 export class RoomManager {
   private rooms: Map<string, Room> = new Map();
   private playerRooms: Map<string, string> = new Map(); // playerId -> roomCode
+  private timers: Map<string, NodeJS.Timeout> = new Map(); // roomCode -> timer
+  private timerCallbacks: Map<string, () => void> = new Map(); // roomCode -> callback pour l'expiration
+  private readonly QUESTION_TIMER = 15; // 15 secondes par question
 
   // Générer un code de room unique (4 caractères)
   private generateRoomCode(): string {
@@ -13,6 +16,69 @@ export class RoomManager {
       code = nanoid(6).toUpperCase();
     } while (this.rooms.has(code));
     return code;
+  }
+
+  // Démarrer le timer pour une question
+  startTimer(roomCode: string, onExpired: () => void, onTick?: (timeRemaining: number) => void): void {
+    // Arrêter le timer existant s'il y en a un
+    this.stopTimer(roomCode);
+
+    const room = this.rooms.get(roomCode);
+    if (!room) return;
+
+    room.timeRemaining = this.QUESTION_TIMER;
+
+    // Stocker le callback d'expiration
+    this.timerCallbacks.set(roomCode, onExpired);
+
+    // Créer un intervalle qui se déclenche chaque seconde
+    const timer = setInterval(() => {
+      const room = this.rooms.get(roomCode);
+      if (!room || room.timeRemaining === undefined) {
+        this.stopTimer(roomCode);
+        return;
+      }
+
+      room.timeRemaining--;
+
+      // Notifier le tick si un callback est fourni
+      if (onTick) {
+        onTick(room.timeRemaining);
+      }
+
+      // Vérifier si le temps est écoulé
+      if (room.timeRemaining <= 0) {
+        // Récupérer le callback AVANT d'arrêter le timer (car stopTimer supprime le callback)
+        const callback = this.timerCallbacks.get(roomCode);
+        this.stopTimer(roomCode);
+        if (callback) {
+          callback();
+        }
+      }
+    }, 1000);
+
+    this.timers.set(roomCode, timer);
+  }
+
+  // Arrêter le timer pour une room
+  stopTimer(roomCode: string): void {
+    const timer = this.timers.get(roomCode);
+    if (timer) {
+      clearInterval(timer);
+      this.timers.delete(roomCode);
+    }
+    this.timerCallbacks.delete(roomCode);
+
+    const room = this.rooms.get(roomCode);
+    if (room) {
+      room.timeRemaining = undefined;
+    }
+  }
+
+  // Obtenir le temps restant pour une room
+  getTimeRemaining(roomCode: string): number | undefined {
+    const room = this.rooms.get(roomCode);
+    return room?.timeRemaining;
   }
 
   // Créer une nouvelle room
@@ -92,6 +158,7 @@ export class RoomManager {
 
     // Si la room est vide, la supprimer
     if (room.players.length === 0) {
+      this.stopTimer(roomCode);
       this.rooms.delete(roomCode);
       return { room: null, shouldDelete: true };
     }
@@ -325,6 +392,9 @@ export class RoomManager {
     const room = this.rooms.get(roomCode);
     if (!room || !room.currentQuestion) return null;
 
+    // Arrêter le timer
+    this.stopTimer(roomCode);
+
     // Compter les votes
     const voteCounts: Record<string, number> = {};
     room.players.forEach(player => {
@@ -396,6 +466,9 @@ export class RoomManager {
 
     const room = this.rooms.get(roomCode);
     if (!room || room.hostId !== playerId) return null;
+
+    // Arrêter le timer
+    this.stopTimer(roomCode);
 
     // Réinitialiser la room au lobby
     room.status = 'lobby';

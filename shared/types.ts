@@ -26,6 +26,7 @@ export interface Room {
   results: QuestionResult[];
   status: 'lobby' | 'custom-questions' | 'playing' | 'results' | 'finished';
   customQuestions?: string[]; // Adjectifs personnalisés saisis par les joueurs
+  timeRemaining?: number; // Temps restant en secondes pour la question actuelle
 }
 
 export interface Question {
@@ -51,6 +52,8 @@ export interface ServerToClientEvents {
   'game:results': (result: QuestionResult) => void;
   'game:finished': (allResults: QuestionResult[]) => void;
   'custom:questionsUpdated': (questions: string[]) => void;
+  'game:timerUpdate': (timeRemaining: number) => void;
+  'game:timeExpired': () => void;
 }
 
 export interface ClientToServerEvents {

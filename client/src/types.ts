@@ -64,4 +64,5 @@ export interface Room {
   results: QuestionResult[];
   status: 'lobby' | 'custom-questions' | 'playing' | 'results' | 'finished';
   customQuestions?: string[];
+  timeRemaining?: number; // Temps restant en secondes pour la question actuelle
 }

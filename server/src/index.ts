@@ -175,6 +175,29 @@ io.on('connection', (socket) => {
       // Si c'est une catégorie custom, on ne démarre pas directement le jeu
       if (room.status !== 'custom-questions' && question) {
         io.to(room.code).emit('game:question', question);
+
+        // Démarrer le timer
+        roomManager.startTimer(
+          room.code,
+          // Callback quand le timer expire
+          () => {
+            io.to(room.code).emit('game:timeExpired');
+
+            // Calculer les résultats avec les votes actuels
+            const result = roomManager.calculateResults(room.code);
+            if (result) {
+              io.to(room.code).emit('game:results', result);
+              const updatedRoom = roomManager.getRoom(room.code);
+              if (updatedRoom) {
+                io.to(room.code).emit('room:updated', updatedRoom);
+              }
+            }
+          },
+          // Callback à chaque tick (chaque seconde)
+          (timeRemaining) => {
+            io.to(room.code).emit('game:timerUpdate', timeRemaining);
+          }
+        );
       }
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du démarrage du jeu');
@@ -225,6 +248,29 @@ io.on('connection', (socket) => {
       const { room, question } = result;
       io.to(room.code).emit('room:updated', room);
       io.to(room.code).emit('game:question', question);
+
+      // Démarrer le timer
+      roomManager.startTimer(
+        room.code,
+        // Callback quand le timer expire
+        () => {
+          io.to(room.code).emit('game:timeExpired');
+
+          // Calculer les résultats avec les votes actuels
+          const result = roomManager.calculateResults(room.code);
+          if (result) {
+            io.to(room.code).emit('game:results', result);
+            const updatedRoom = roomManager.getRoom(room.code);
+            if (updatedRoom) {
+              io.to(room.code).emit('room:updated', updatedRoom);
+            }
+          }
+        },
+        // Callback à chaque tick (chaque seconde)
+        (timeRemaining) => {
+          io.to(room.code).emit('game:timerUpdate', timeRemaining);
+        }
+      );
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du démarrage du jeu');
     }
@@ -270,6 +316,29 @@ io.on('connection', (socket) => {
         io.to(room.code).emit('game:finished', room.results);
       } else if (question) {
         io.to(room.code).emit('game:question', question);
+
+        // Démarrer le timer pour la nouvelle question
+        roomManager.startTimer(
+          room.code,
+          // Callback quand le timer expire
+          () => {
+            io.to(room.code).emit('game:timeExpired');
+
+            // Calculer les résultats avec les votes actuels
+            const result = roomManager.calculateResults(room.code);
+            if (result) {
+              io.to(room.code).emit('game:results', result);
+              const updatedRoom = roomManager.getRoom(room.code);
+              if (updatedRoom) {
+                io.to(room.code).emit('room:updated', updatedRoom);
+              }
+            }
+          },
+          // Callback à chaque tick (chaque seconde)
+          (timeRemaining) => {
+            io.to(room.code).emit('game:timerUpdate', timeRemaining);
+          }
+        );
       }
     } catch (error) {
       socket.emit('room:error', 'Erreur lors du passage à la question suivante');

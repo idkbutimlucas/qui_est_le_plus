@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 
 export default function Game() {
-  const { room, currentQuestion, currentResult, socket, vote } = useSocket();
+  const { room, currentQuestion, currentResult, socket, vote, timeRemaining } = useSocket();
   const navigate = useNavigate();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
@@ -69,6 +69,20 @@ export default function Game() {
   });
   const progressPercentage = (votedCount / totalPlayers) * 100;
 
+  // Déterminer la couleur du timer
+  const getTimerColor = () => {
+    if (timeRemaining === null) return 'text-primary';
+    if (timeRemaining <= 5) return 'text-red-600';
+    if (timeRemaining <= 10) return 'text-orange-500';
+    return 'text-primary';
+  };
+
+  const getTimerAnimation = () => {
+    if (timeRemaining === null) return '';
+    if (timeRemaining <= 5) return 'animate-pulse';
+    return '';
+  };
+
   return (
     <div className="neo-container h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Indicateurs dans les coins */}
@@ -91,8 +105,21 @@ export default function Game() {
         </div>
       </div>
 
-      <div className="fixed top-4 right-4 z-20 animate-slide-in" style={{ animationDelay: '0.1s' }}>
-        <div className="neo-card px-3 py-2">
+      <div className="fixed top-4 right-4 z-20 flex flex-col gap-2">
+        {/* Timer */}
+        {timeRemaining !== null && (
+          <div className="neo-card px-3 py-2 animate-slide-in" style={{ animationDelay: '0.05s' }}>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⏱</span>
+              <span className={`text-lg font-bold ${getTimerColor()} ${getTimerAnimation()}`}>
+                {timeRemaining}s
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Votes */}
+        <div className="neo-card px-3 py-2 animate-slide-in" style={{ animationDelay: '0.1s' }}>
           <div className="flex items-center gap-2">
             <div className={`neo-indicator ${votedCount === totalPlayers ? 'animate-glow-soft' : ''}`}></div>
             <p className="text-xs font-semibold text-primary">

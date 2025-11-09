@@ -8,6 +8,7 @@ interface SocketContextType {
   currentQuestion: Question | null;
   currentResult: QuestionResult | null;
   error: string | null;
+  timeRemaining: number | null;
   createRoom: (playerName: string, avatar?: string) => void;
   joinRoom: (code: string, playerName: string, avatar?: string) => void;
   updateSettings: (settings: { numberOfQuestions: number; categories: string[] }) => void;
@@ -33,6 +34,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentResult, setCurrentResult] = useState<QuestionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     const newSocket = SOCKET_URL ? io(SOCKET_URL) : io();
@@ -63,14 +65,25 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     newSocket.on('game:question', (question: Question) => {
       setCurrentQuestion(question);
       setCurrentResult(null);
+      setTimeRemaining(15); // Réinitialiser le timer à 15 secondes
     });
 
     newSocket.on('game:results', (result: QuestionResult) => {
       setCurrentResult(result);
+      setTimeRemaining(null); // Arrêter le timer
     });
 
     newSocket.on('game:finished', () => {
       // Le jeu est terminé
+      setTimeRemaining(null);
+    });
+
+    newSocket.on('game:timerUpdate', (time: number) => {
+      setTimeRemaining(time);
+    });
+
+    newSocket.on('game:timeExpired', () => {
+      setTimeRemaining(0);
     });
 
     return () => {
@@ -135,6 +148,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         currentQuestion,
         currentResult,
         error,
+        timeRemaining,
         createRoom,
         joinRoom,
         updateSettings,
