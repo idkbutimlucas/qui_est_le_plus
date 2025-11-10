@@ -4,7 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { QuestionCategory, categoryLabels } from '../types';
 
 export default function Lobby() {
-  const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer, regenerateCode } = useSocket();
+  const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer, transferHost, regenerateCode } = useSocket();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
@@ -17,6 +17,12 @@ export default function Lobby() {
   const handleKickPlayer = (playerId: string) => {
     if (window.confirm('Voulez-vous vraiment expulser ce joueur ?')) {
       kickPlayer(playerId);
+    }
+  };
+
+  const handleTransferHost = (playerId: string, playerName: string) => {
+    if (window.confirm(`Voulez-vous vraiment transférer le rôle d'hôte à ${playerName} ? Vous ne serez plus l'hôte.`)) {
+      transferHost(playerId);
     }
   };
 
@@ -194,13 +200,22 @@ export default function Lobby() {
                     )}
                   </div>
                   {isHost && !player.isHost && (
-                    <button
-                      onClick={() => handleKickPlayer(player.id)}
-                      className="neo-button p-2 text-red-500 hover:text-red-600"
-                      title="Expulser ce joueur"
-                    >
-                      <span className="text-base">✕</span>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleTransferHost(player.id, player.name)}
+                        className="neo-button px-3 py-2 text-xs font-semibold text-accent hover:bg-accent hover:text-white transition-colors"
+                        title="Transférer le rôle d'hôte"
+                      >
+                        👑
+                      </button>
+                      <button
+                        onClick={() => handleKickPlayer(player.id)}
+                        className="neo-button p-2 text-red-500 hover:text-red-600"
+                        title="Expulser ce joueur"
+                      >
+                        <span className="text-base">✕</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               ))}

@@ -7,6 +7,7 @@ interface SocketContextType {
   room: Room | null;
   currentQuestion: Question | null;
   currentResult: QuestionResult | null;
+  allResults: QuestionResult[] | null;
   error: string | null;
   timeRemaining: number | null;
   createRoom: (playerName: string, avatar?: string) => void;
@@ -18,6 +19,7 @@ interface SocketContextType {
   backToLobby: () => void;
   leaveRoom: () => void;
   kickPlayer: (playerId: string) => void;
+  transferHost: (newHostId: string) => void;
   regenerateCode: () => void;
   clearError: () => void;
 }
@@ -33,6 +35,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [room, setRoom] = useState<Room | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentResult, setCurrentResult] = useState<QuestionResult | null>(null);
+  const [allResults, setAllResults] = useState<QuestionResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
@@ -73,8 +76,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       setTimeRemaining(null); // Arrêter le timer
     });
 
-    newSocket.on('game:finished', () => {
+    newSocket.on('game:finished', (results: QuestionResult[]) => {
       // Le jeu est terminé
+      setAllResults(results);
       setTimeRemaining(null);
     });
 
@@ -119,6 +123,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     socket?.emit('game:backToLobby');
     setCurrentQuestion(null);
     setCurrentResult(null);
+    setAllResults(null);
   };
 
   const leaveRoom = () => {
@@ -126,10 +131,15 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     setRoom(null);
     setCurrentQuestion(null);
     setCurrentResult(null);
+    setAllResults(null);
   };
 
   const kickPlayer = (playerId: string) => {
     socket?.emit('room:kickPlayer', playerId);
+  };
+
+  const transferHost = (newHostId: string) => {
+    socket?.emit('room:transferHost', newHostId);
   };
 
   const regenerateCode = () => {
@@ -147,6 +157,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         room,
         currentQuestion,
         currentResult,
+        allResults,
         error,
         timeRemaining,
         createRoom,
@@ -158,6 +169,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         backToLobby,
         leaveRoom,
         kickPlayer,
+        transferHost,
         regenerateCode,
         clearError,
       }}

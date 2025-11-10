@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 
 export default function Results() {
-  const { room, currentResult, socket, nextQuestion, backToLobby } = useSocket();
+  const { room, currentResult, allResults, socket, nextQuestion } = useSocket();
   const navigate = useNavigate();
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
@@ -20,19 +20,21 @@ export default function Results() {
       return;
     }
 
+    // Pas de navigation automatique, on laisse l'utilisateur cliquer sur le bouton
+
     // Ne rediriger vers le jeu que si on n'a pas de résultats à afficher
     if (!currentResult && room.status === 'playing') {
       navigate('/game');
       return;
     }
-  }, [room, currentResult, navigate]);
+  }, [room, currentResult, allResults, navigate]);
 
   const handleNextQuestion = () => {
     nextQuestion();
   };
 
-  const handleBackToLobby = () => {
-    backToLobby();
+  const handleViewRecap = () => {
+    navigate('/final-recap');
   };
 
   if (!room || !currentResult) {
@@ -204,12 +206,12 @@ export default function Results() {
           <div className="neo-card p-4 animate-scale-in flex-shrink-0">
             {isFinished ? (
               <button
-                onClick={handleBackToLobby}
+                onClick={handleViewRecap}
                 className="w-full neo-button-accent font-bold text-xl py-4 px-6 text-white"
               >
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-2xl">🔄</span>
-                  <span>Retour au lobby</span>
+                  <span className="text-2xl">📊</span>
+                  <span>Voir le récapitulatif</span>
                 </div>
               </button>
             ) : (
@@ -228,19 +230,22 @@ export default function Results() {
 
         {!isHost && (
           <div className="neo-card p-4 animate-scale-in flex-shrink-0">
-            <p className="text-center text-primary font-bold text-base flex items-center justify-center gap-2">
-              {isFinished ? (
-                <>
-                  <span className="text-2xl">🎉</span>
-                  <span>Merci !</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-2xl animate-pulse-soft">⏳</span>
-                  <span>En attente...</span>
-                </>
-              )}
-            </p>
+            {isFinished ? (
+              <button
+                onClick={handleViewRecap}
+                className="w-full neo-button-accent font-bold text-xl py-4 px-6 text-white"
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl">📊</span>
+                  <span>Voir le récapitulatif</span>
+                </div>
+              </button>
+            ) : (
+              <p className="text-center text-primary font-bold text-base flex items-center justify-center gap-2">
+                <span className="text-2xl animate-pulse-soft">⏳</span>
+                <span>En attente...</span>
+              </p>
+            )}
           </div>
         )}
       </div>

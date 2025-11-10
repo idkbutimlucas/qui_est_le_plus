@@ -135,6 +135,22 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Transférer le rôle d'hôte
+  socket.on('room:transferHost', (newHostId) => {
+    try {
+      const { room, transferred } = roomManager.transferHost(socket.id, newHostId);
+      if (!room || !transferred) {
+        socket.emit('room:error', 'Impossible de transférer le rôle d\'hôte');
+        return;
+      }
+
+      // Notifier tous les joueurs de la mise à jour
+      io.to(room.code).emit('room:updated', room);
+    } catch (error) {
+      socket.emit('room:error', 'Erreur lors du transfert du rôle d\'hôte');
+    }
+  });
+
   // Régénérer le code de la room
   socket.on('room:regenerateCode', () => {
     try {

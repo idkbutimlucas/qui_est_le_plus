@@ -201,6 +201,33 @@ export class RoomManager {
     return { room, kicked: true };
   }
 
+  // Transférer le rôle d'hôte à un autre joueur
+  transferHost(currentHostId: string, newHostId: string): { room: Room | null; transferred: boolean } {
+    const roomCode = this.playerRooms.get(currentHostId);
+    if (!roomCode) return { room: null, transferred: false };
+
+    const room = this.rooms.get(roomCode);
+    if (!room || room.hostId !== currentHostId) return { room: null, transferred: false };
+
+    // Vérifier que le nouveau joueur existe dans la room
+    const newHostPlayer = room.players.find(p => p.id === newHostId);
+    if (!newHostPlayer) {
+      return { room: null, transferred: false };
+    }
+
+    // Retirer le statut d'hôte de l'ancien hôte
+    const oldHostPlayer = room.players.find(p => p.id === currentHostId);
+    if (oldHostPlayer) {
+      oldHostPlayer.isHost = false;
+    }
+
+    // Donner le statut d'hôte au nouveau joueur
+    newHostPlayer.isHost = true;
+    room.hostId = newHostId;
+
+    return { room, transferred: true };
+  }
+
   // Régénérer le code d'une room (seulement par l'hôte)
   regenerateCode(hostId: string): { room: Room | null; oldCode: string | null } {
     const oldCode = this.playerRooms.get(hostId);
@@ -433,16 +460,18 @@ export class RoomManager {
     const room = this.rooms.get(roomCode);
     if (!room || room.hostId !== playerId) return null;
 
-    room.currentQuestionIndex++;
-    room.votes = {};
-
     const allQuestions = (room as any).allQuestions || [];
 
-    // Vérifier s'il reste des questions
-    if (room.currentQuestionIndex >= allQuestions.length) {
+    // Vérifier s'il reste des questions AVANT d'incrémenter
+    if (room.currentQuestionIndex + 1 >= allQuestions.length) {
       room.status = 'finished';
+      room.votes = {};
       return { room, finished: true };
     }
+
+    // Incrémenter seulement si on continue
+    room.currentQuestionIndex++;
+    room.votes = {};
 
     // Créer la prochaine question
     const questionData = allQuestions[room.currentQuestionIndex];

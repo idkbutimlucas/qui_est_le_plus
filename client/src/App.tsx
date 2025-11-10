@@ -6,6 +6,7 @@ import CustomQuestions from './pages/CustomQuestions';
 import Game from './pages/Game';
 import VoteReveal from './pages/VoteReveal';
 import Results from './pages/Results';
+import FinalRecap from './pages/FinalRecap';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/game" element={<Game />} />
           <Route path="/vote-reveal" element={<VoteReveal />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/final-recap" element={<FinalRecap />} />
         </Routes>
       </Router>
     </SocketProvider>
