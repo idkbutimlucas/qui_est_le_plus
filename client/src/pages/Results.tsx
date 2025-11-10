@@ -62,14 +62,23 @@ export default function Results() {
 
   return (
     <div className="neo-container h-screen flex items-center justify-center p-4">
-      {/* Indicateur */}
+      {/* Indicateur de progression des questions */}
       <div className="fixed top-4 left-4 z-20 animate-slide-in">
         <div className="neo-card px-3 py-2">
           <div className="flex items-center gap-2">
             <div className={`neo-indicator ${isFinished ? 'animate-glow-soft' : ''}`}></div>
             <p className="text-xs font-semibold text-primary">
-              {isFinished ? '🎉 Terminé' : '📊 Résultats'}
+              Q {room.currentQuestionIndex + 1}/{room.settings.numberOfQuestions}
+              {isFinished && ' 🎉'}
             </p>
+          </div>
+          <div className="neo-progress-bar h-1 mt-1">
+            <div
+              className="neo-progress-fill"
+              style={{
+                width: `${((room.currentQuestionIndex + 1) / room.settings.numberOfQuestions) * 100}%`,
+              }}
+            ></div>
           </div>
         </div>
       </div>

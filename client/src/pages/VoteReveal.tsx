@@ -84,6 +84,16 @@ export default function VoteReveal() {
     }
   }, [revealedVotes, voteItems, isComplete]);
 
+  // Gestion du cas où personne n'a voté
+  useEffect(() => {
+    if (isCountdownDone && voteItems.length === 0 && !isComplete) {
+      const timer = setTimeout(() => {
+        setIsComplete(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isCountdownDone, voteItems, isComplete]);
+
   useEffect(() => {
     if (isComplete) {
       const timer = setTimeout(() => {
@@ -99,6 +109,26 @@ export default function VoteReveal() {
 
   return (
     <div className="neo-container h-screen flex items-center justify-center p-4 overflow-hidden">
+      {/* Indicateur de progression des questions */}
+      <div className="fixed top-4 left-4 z-20 animate-slide-in">
+        <div className="neo-card px-3 py-2">
+          <div className="flex items-center gap-2">
+            <div className="neo-indicator"></div>
+            <p className="text-xs font-semibold text-primary">
+              Q {room.currentQuestionIndex + 1}/{room.settings.numberOfQuestions}
+            </p>
+          </div>
+          <div className="neo-progress-bar h-1 mt-1">
+            <div
+              className="neo-progress-fill"
+              style={{
+                width: `${((room.currentQuestionIndex + 1) / room.settings.numberOfQuestions) * 100}%`,
+              }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
       {/* Countdown */}
       {!isCountdownDone && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
@@ -211,7 +241,7 @@ export default function VoteReveal() {
         </div>
 
         {/* Indicateur de progression */}
-        {isCountdownDone && !isComplete && (
+        {isCountdownDone && !isComplete && voteItems.length > 0 && (
           <div className="text-center animate-slide-in flex-shrink-0 mb-3">
             <p className="text-primary font-bold mb-2 text-base">
               {revealedVotes.length} / {voteItems.length}
@@ -223,6 +253,20 @@ export default function VoteReveal() {
                   width: `${(revealedVotes.length / voteItems.length) * 100}%`,
                 }}
               ></div>
+            </div>
+          </div>
+        )}
+
+        {/* Message quand personne n'a voté */}
+        {isCountdownDone && !isComplete && voteItems.length === 0 && (
+          <div className="text-center animate-scale-in flex-shrink-0">
+            <div className="neo-card p-4">
+              <p className="text-xl font-bold text-secondary mb-2">
+                😴 Personne n'a voté...
+              </p>
+              <p className="text-primary font-semibold text-sm">
+                Passage aux résultats
+              </p>
             </div>
           </div>
         )}
