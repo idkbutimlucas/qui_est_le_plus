@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { useAudio } from '../context/AudioContext';
 
 export default function Game() {
   const { room, currentQuestion, currentResult, socket, vote, timeRemaining } = useSocket();
+  const { playSound } = useAudio();
   const navigate = useNavigate();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
@@ -48,6 +50,7 @@ export default function Game() {
 
   const handleVote = (playerId: string) => {
     if (!currentResult) {
+      playSound('vote');
       setSelectedPlayerId(playerId);
       vote(playerId);
       setHasVoted(true);

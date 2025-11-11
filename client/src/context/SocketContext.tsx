@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Room, Question, QuestionResult } from '../types';
+import { useAudio } from './AudioContext';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -31,6 +32,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ||
   (import.meta.env.MODE === 'production' ? undefined : 'http://localhost:3000');
 
 export function SocketProvider({ children }: { children: ReactNode }) {
+  const { playSound } = useAudio();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [room, setRoom] = useState<Room | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -38,6 +40,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [allResults, setAllResults] = useState<QuestionResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+
+  // Ref pour éviter de jouer le tick plusieurs fois
+  const lastTickTime = useRef<number | null>(null);
 
   useEffect(() => {
     const newSocket = SOCKET_URL ? io(SOCKET_URL) : io();
@@ -47,6 +52,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     newSocket.on('room:joined', (room: Room) => {
       setRoom(room);
       setError(null);
+      playSound('join');
     });
 
     newSocket.on('room:updated', (room: Room) => {
@@ -55,6 +61,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     newSocket.on('room:error', (error: string) => {
       setError(error);
+      playSound('error');
     });
 
     newSocket.on('room:kicked', () => {
@@ -63,37 +70,50 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       setCurrentQuestion(null);
       setCurrentResult(null);
       setError('Vous avez été expulsé de la partie');
+      playSound('error');
     });
 
     newSocket.on('game:question', (question: Question) => {
       setCurrentQuestion(question);
       setCurrentResult(null);
       setTimeRemaining(15); // Réinitialiser le timer à 15 secondes
+      lastTickTime.current = null;
+      playSound('whoosh');
     });
 
     newSocket.on('game:results', (result: QuestionResult) => {
       setCurrentResult(result);
       setTimeRemaining(null); // Arrêter le timer
+      lastTickTime.current = null;
+      playSound('reveal');
     });
 
     newSocket.on('game:finished', (results: QuestionResult[]) => {
       // Le jeu est terminé
       setAllResults(results);
       setTimeRemaining(null);
+      lastTickTime.current = null;
+      playSound('winner');
     });
 
     newSocket.on('game:timerUpdate', (time: number) => {
       setTimeRemaining(time);
+      // Jouer un tick pour les 3 dernières secondes (seulement une fois par seconde)
+      if (time <= 3 && time > 0 && lastTickTime.current !== time) {
+        lastTickTime.current = time;
+        playSound('tick');
+      }
     });
 
     newSocket.on('game:timeExpired', () => {
       setTimeRemaining(0);
+      lastTickTime.current = null;
     });
 
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [playSound]);
 
   const createRoom = (playerName: string, avatar?: string) => {
     socket?.emit('room:create', playerName, avatar);

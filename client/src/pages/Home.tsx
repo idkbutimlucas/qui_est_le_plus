@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { useAudio } from '../context/AudioContext';
 
 export default function Home() {
   const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu');
@@ -8,6 +9,7 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('');
   const [avatarPreview, setAvatarPreview] = useState<string>();
   const { room, createRoom, joinRoom, error, clearError } = useSocket();
+  const { playSound } = useAudio();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,12 +62,14 @@ export default function Home() {
 
   const handleCreateRoom = () => {
     if (playerName.trim()) {
+      playSound('click');
       createRoom(playerName, avatarPreview);
     }
   };
 
   const handleJoinRoom = () => {
     if (playerName.trim() && roomCode.trim()) {
+      playSound('click');
       joinRoom(roomCode, playerName, avatarPreview);
     }
   };
@@ -91,7 +95,10 @@ export default function Home() {
         {mode === 'menu' && (
           <div className="space-y-6 animate-slide-in">
             <button
-              onClick={() => setMode('create')}
+              onClick={() => {
+                playSound('click');
+                setMode('create');
+              }}
               className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
             >
               <div className="flex items-center justify-center gap-3">
@@ -100,7 +107,10 @@ export default function Home() {
               </div>
             </button>
             <button
-              onClick={() => setMode('join')}
+              onClick={() => {
+                playSound('click');
+                setMode('join');
+              }}
               className="w-full neo-button py-5 px-8 text-xl font-semibold text-primary"
             >
               <div className="flex items-center justify-center gap-3">
@@ -116,6 +126,7 @@ export default function Home() {
           <div className="neo-card p-8 space-y-6 animate-slide-in">
             <button
               onClick={() => {
+                playSound('click');
                 setMode('menu');
                 clearError();
               }}
@@ -192,6 +203,7 @@ export default function Home() {
           <div className="neo-card p-8 space-y-6 animate-slide-in">
             <button
               onClick={() => {
+                playSound('click');
                 setMode('menu');
                 clearError();
               }}

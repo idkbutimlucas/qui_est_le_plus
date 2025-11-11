@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { useAudio } from '../context/AudioContext';
 import { QuestionCategory, categoryLabels } from '../types';
 
 export default function Lobby() {
   const { room, socket, updateSettings, startGame, leaveRoom, kickPlayer, transferHost, regenerateCode } = useSocket();
+  const { playSound } = useAudio();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
@@ -35,6 +37,7 @@ export default function Lobby() {
 
   const copyCode = () => {
     if (room) {
+      playSound('click');
       navigator.clipboard.writeText(room.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -81,11 +84,13 @@ export default function Lobby() {
 
   const handleStartGame = () => {
     if (room && room.players.length >= 2) {
+      playSound('click');
       startGame();
     }
   };
 
   const handleLeaveRoom = () => {
+    playSound('click');
     leaveRoom();
     navigate('/');
   };
