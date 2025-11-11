@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
-import { useAudio } from '../context/AudioContext';
 
 interface VoteRevealItem {
   voterId: string;
@@ -14,7 +13,6 @@ interface VoteRevealItem {
 
 export default function VoteReveal() {
   const { room, currentResult, socket } = useSocket();
-  const { playSound } = useAudio();
   const navigate = useNavigate();
 
   const [countdown, setCountdown] = useState(3);
@@ -59,25 +57,23 @@ export default function VoteReveal() {
 
   useEffect(() => {
     if (countdown > 0) {
-      playSound('countdown');
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else {
       setIsCountdownDone(true);
     }
-  }, [countdown, playSound]);
+  }, [countdown]);
 
   useEffect(() => {
     if (!isCountdownDone || currentRevealIndex >= voteItems.length) return;
 
     const timer = setTimeout(() => {
-      playSound('reveal');
       setRevealedVotes(prev => [...prev, voteItems[currentRevealIndex]]);
       setCurrentRevealIndex(prev => prev + 1);
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [isCountdownDone, currentRevealIndex, voteItems, playSound]);
+  }, [isCountdownDone, currentRevealIndex, voteItems]);
 
   useEffect(() => {
     if (revealedVotes.length === voteItems.length && voteItems.length > 0 && !isComplete) {
