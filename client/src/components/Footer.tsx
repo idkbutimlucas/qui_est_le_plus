@@ -18,19 +18,19 @@ export default function Footer() {
         </div>
 
         {/* Buy Me a Coffee */}
-        <a
-          href="https://buymeacoffee.com/idkbutimlucas"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pointer-events-auto"
-        >
-          <div className="neo-card px-2 py-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-150 opacity-60 hover:opacity-100">
-            <div className="flex items-center gap-1">
-              <span className="text-sm">☕</span>
-              <span className="text-[10px] font-bold text-primary">Coffee</span>
-            </div>
-          </div>
-        </a>
+        <div className="pointer-events-auto opacity-60 hover:opacity-100 transition-opacity">
+          <a
+            href="https://www.buymeacoffee.com/idkbutimlucas"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=idkbutimlucas&button_colour=c08e6c&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"
+              alt="Buy Me A Coffee"
+              style={{ height: '24px', width: 'auto' }}
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );
