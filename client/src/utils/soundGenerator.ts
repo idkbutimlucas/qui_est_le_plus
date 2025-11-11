@@ -10,7 +10,9 @@ export type SoundType =
   | 'error'         // Erreur
   | 'click'         // Click interface
   | 'whoosh'        // Transition
-  | 'countdown';    // Countdown 3-2-1
+  | 'countdown'     // Countdown 3-2-1
+  | 'celebration'   // Fanfare triomphale longue
+  | 'applause';     // Applaudissements
 
 class SoundGenerator {
   private audioContext: AudioContext | null = null;
@@ -82,6 +84,12 @@ class SoundGenerator {
         break;
       case 'countdown':
         this.playCountdownSound(ctx, now);
+        break;
+      case 'celebration':
+        this.playCelebrationSound(ctx, now);
+        break;
+      case 'applause':
+        this.playApplauseSound(ctx, now);
         break;
     }
   }
@@ -247,6 +255,73 @@ class SoundGenerator {
 
     osc.start(now);
     osc.stop(now + 0.12);
+  }
+
+  private playCelebrationSound(ctx: AudioContext, now: number) {
+    // Fanfare triomphale: séquence de 6 notes joyeuses
+    const melody = [
+      { freq: 523, time: 0 },      // Do
+      { freq: 659, time: 0.15 },   // Mi
+      { freq: 784, time: 0.3 },    // Sol
+      { freq: 1047, time: 0.45 },  // Do aigu
+      { freq: 784, time: 0.6 },    // Sol
+      { freq: 1047, time: 0.75 },  // Do aigu (finale)
+    ];
+
+    melody.forEach(({ freq, time }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+
+      osc.frequency.setValueAtTime(freq, now + time);
+
+      const duration = time === 0.75 ? 0.3 : 0.12; // Note finale plus longue
+      const volume = time === 0.75 ? 0.3 : 0.22;
+
+      gain.gain.setValueAtTime(volume, now + time);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + time + duration);
+
+      osc.start(now + time);
+      osc.stop(now + time + duration);
+    });
+  }
+
+  private playApplauseSound(ctx: AudioContext, now: number) {
+    // Simulation d'applaudissements avec du bruit blanc
+    const duration = 1.5;
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Générer du bruit blanc avec enveloppe
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / ctx.sampleRate;
+      // Enveloppe: monte puis descend
+      const envelope = t < 0.3 ? t / 0.3 : 1 - ((t - 0.3) / 1.2);
+      // Bruit blanc modulé
+      data[i] = (Math.random() * 2 - 1) * envelope * 0.15;
+    }
+
+    const source = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+
+    source.buffer = buffer;
+
+    // Filtre pour rendre le son plus réaliste
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1000, now);
+    filter.Q.setValueAtTime(0.5, now);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain!);
+
+    gain.gain.setValueAtTime(0.3, now);
+
+    source.start(now);
   }
 }
 

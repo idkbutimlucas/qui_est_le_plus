@@ -1,10 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { useAudio } from '../context/AudioContext';
+import { useConfetti } from '../hooks/useConfetti';
 
 export default function FinalRecap() {
   const { room, allResults, socket, backToLobby } = useSocket();
+  const { playSound } = useAudio();
+  const { celebrateChampion } = useConfetti();
   const navigate = useNavigate();
+  const [hasPlayed, setHasPlayed] = useState(false);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
 
@@ -19,6 +24,17 @@ export default function FinalRecap() {
       return;
     }
   }, [room, allResults, navigate]);
+
+  // Grande célébration pour le récapitulatif final
+  useEffect(() => {
+    if (allResults && !hasPlayed) {
+      setTimeout(() => {
+        playSound('applause');
+        celebrateChampion();
+      }, 500);
+      setHasPlayed(true);
+    }
+  }, [allResults, hasPlayed, playSound, celebrateChampion]);
 
   const handleBackToLobby = () => {
     backToLobby();

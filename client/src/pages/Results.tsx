@@ -1,10 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { useAudio } from '../context/AudioContext';
+import { useConfetti } from '../hooks/useConfetti';
 
 export default function Results() {
   const { room, currentResult, allResults, socket, nextQuestion } = useSocket();
+  const { playSound } = useAudio();
+  const { celebrateWinner } = useConfetti();
   const navigate = useNavigate();
+  const [hasPlayed, setHasPlayed] = useState(false);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
 
@@ -28,6 +33,21 @@ export default function Results() {
       return;
     }
   }, [room, currentResult, allResults, navigate]);
+
+  // Célébrer le gagnant au chargement des résultats
+  useEffect(() => {
+    if (currentResult && !hasPlayed) {
+      const winner = currentResult.ranking[0];
+      // Célébrer seulement s'il y a des votes
+      if (winner && winner.votes > 0) {
+        setTimeout(() => {
+          playSound('celebration');
+          celebrateWinner();
+        }, 500);
+      }
+      setHasPlayed(true);
+    }
+  }, [currentResult, hasPlayed, playSound, celebrateWinner]);
 
   const handleNextQuestion = () => {
     nextQuestion();
