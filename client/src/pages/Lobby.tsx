@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import { useAudio } from '../context/AudioContext';
@@ -13,6 +13,7 @@ export default function Lobby() {
   const [selectedCategories, setSelectedCategories] = useState<QuestionCategory[]>(['classique']);
   const [showCode, setShowCode] = useState(true);
   const [copied, setCopied] = useState(false);
+  const restoredCodeRef = useRef<string | null>(null);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
 
@@ -53,12 +54,32 @@ export default function Lobby() {
     setNumberOfQuestions(room.settings.numberOfQuestions);
     setSelectedCategories(room.settings.categories as QuestionCategory[]);
 
+    // Restaurer l'état showCode depuis localStorage seulement une fois par code de room
+    if (restoredCodeRef.current !== room.code) {
+      const storageKey = `showCode_${room.code}`;
+      const stored = localStorage.getItem(storageKey);
+      if (stored !== null) {
+        setShowCode(stored === 'true');
+      } else {
+        setShowCode(true); // Par défaut visible
+      }
+      restoredCodeRef.current = room.code;
+    }
+
     if (room.status === 'custom-questions') {
       navigate('/custom-questions');
     } else if (room.status === 'playing') {
       navigate('/game');
     }
   }, [room, navigate]);
+
+  // Sauvegarder l'état showCode dans localStorage
+  useEffect(() => {
+    if (room?.code) {
+      const storageKey = `showCode_${room.code}`;
+      localStorage.setItem(storageKey, showCode.toString());
+    }
+  }, [showCode, room?.code]);
 
   const handleCategoryToggle = (category: QuestionCategory) => {
     const newCategories = selectedCategories.includes(category)
