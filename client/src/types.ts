@@ -27,10 +27,17 @@ export interface Player {
   isHost: boolean;
 }
 
+// Interface pour une question personnalisée
+export interface CustomQuestion {
+  adjective: string;
+  playerId: string; // ID du joueur qui a créé cette question
+}
+
 // Interface pour les settings de la room
 export interface RoomSettings {
   numberOfQuestions: number;
   categories: QuestionCategory[];
+  questionTime: number; // Durée de chaque question en secondes (par défaut: 30)
 }
 
 // Interface pour une question
@@ -63,6 +70,7 @@ export interface Room {
   votes: Record<string, string>;
   results: QuestionResult[];
   status: 'lobby' | 'custom-questions' | 'playing' | 'results' | 'finished';
-  customQuestions?: string[];
+  customQuestions?: CustomQuestion[]; // Questions personnalisées avec leur auteur
   timeRemaining?: number; // Temps restant en secondes pour la question actuelle
+  usedQuestions: string[]; // Adjectifs déjà posés dans ce lobby (persiste entre les parties)
 }

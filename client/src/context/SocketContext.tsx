@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { Room, Question, QuestionResult } from '../types';
+import { Room, Question, QuestionResult, RoomSettings } from '../types';
 import { useAudio } from './AudioContext';
 
 interface SocketContextType {
@@ -13,7 +13,7 @@ interface SocketContextType {
   timeRemaining: number | null;
   createRoom: (playerName: string, avatar?: string) => void;
   joinRoom: (code: string, playerName: string, avatar?: string) => void;
-  updateSettings: (settings: { numberOfQuestions: number; categories: string[] }) => void;
+  updateSettings: (settings: RoomSettings) => void;
   startGame: () => void;
   vote: (targetPlayerId: string) => void;
   nextQuestion: () => void;
@@ -123,7 +123,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     socket?.emit('room:join', code, playerName, avatar);
   };
 
-  const updateSettings = (settings: { numberOfQuestions: number; categories: string[] }) => {
+  const updateSettings = (settings: RoomSettings) => {
     socket?.emit('room:updateSettings', settings);
   };
 

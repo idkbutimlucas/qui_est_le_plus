@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
+import { CustomQuestion } from '../types';
 
 export default function CustomQuestions() {
   const { room, socket } = useSocket();
   const navigate = useNavigate();
   const [currentAdjective, setCurrentAdjective] = useState('');
-  const [customQuestions, setCustomQuestions] = useState<string[]>([]);
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
 
   const isHost = room?.players.find((p) => p.id === socket?.id)?.isHost;
   const numberOfQuestions = room?.settings.numberOfQuestions || 10;
   const questionsCompleted = customQuestions.length;
   const isComplete = questionsCompleted >= numberOfQuestions;
+
+  // Filtrer les questions selon si on est hôte ou joueur
+  const displayedQuestions = isHost
+    ? customQuestions // L'hôte voit toutes les questions
+    : customQuestions.filter(q => q.playerId === socket?.id); // Les joueurs voient uniquement les leurs
 
   useEffect(() => {
     if (!room) {
@@ -37,7 +43,7 @@ export default function CustomQuestions() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('custom:questionsUpdated', (questions: string[]) => {
+    socket.on('custom:questionsUpdated', (questions: CustomQuestion[]) => {
       setCustomQuestions(questions);
     });
 
@@ -94,7 +100,9 @@ export default function CustomQuestions() {
                 Créez vos questions
               </h1>
               <p className="text-secondary font-medium text-base">
-                Tous les joueurs peuvent ajouter des adjectifs
+                {isHost
+                  ? 'Vous voyez toutes les questions de tous les joueurs'
+                  : 'Vos questions restent secrètes, seul l\'hôte les voit'}
               </p>
             </div>
             <div className="neo-badge text-base">
@@ -138,33 +146,49 @@ export default function CustomQuestions() {
         {/* Liste des questions */}
         <div className="neo-card p-4 mb-4 flex flex-col flex-1 min-h-0">
           <h2 className="text-xl font-bold text-primary mb-3 flex-shrink-0">
-            Questions créées
+            {isHost ? 'Toutes les questions' : 'Mes questions'}
           </h2>
-          {customQuestions.length === 0 ? (
+          {displayedQuestions.length === 0 ? (
             <div className="neo-pressed p-4 text-center">
               <p className="text-secondary font-medium text-base">
-                Aucune question pour le moment
+                {isHost ? 'Aucune question pour le moment' : 'Vous n\'avez pas encore ajouté de question'}
               </p>
             </div>
           ) : (
             <div className="neo-scroll-container flex-1 overflow-y-auto">
               <div className="space-y-2 pr-2">
-              {customQuestions.map((adjective, index) => (
-                <div
-                  key={index}
-                  className="neo-card p-3 flex items-center justify-between hover-lift"
-                >
-                  <p className="font-semibold text-base text-primary">
-                    {index + 1}. Qui est le plus <span className="text-accent font-bold">{adjective}</span> ?
-                  </p>
-                  <button
-                    onClick={() => handleRemoveQuestion(index)}
-                    className="neo-button p-2 text-red-500 hover:text-red-600 text-base"
+              {displayedQuestions.map((question, displayIndex) => {
+                // Trouver l'index réel dans customQuestions pour la suppression
+                const realIndex = customQuestions.findIndex(q => q === question);
+                const player = room?.players.find(p => p.id === question.playerId);
+
+                return (
+                  <div
+                    key={realIndex}
+                    className="neo-card p-3 flex items-center justify-between hover-lift"
                   >
-                    ✕
-                  </button>
-                </div>
-              ))}
+                    <div className="flex-1">
+                      <p className="font-semibold text-base text-primary">
+                        {displayIndex + 1}. Qui est le plus <span className="text-accent font-bold">{question.adjective}</span> ?
+                      </p>
+                      {isHost && player && (
+                        <p className="text-xs text-secondary mt-1">
+                          Par {player.name}
+                        </p>
+                      )}
+                    </div>
+                    {isHost && (
+                      <button
+                        onClick={() => handleRemoveQuestion(realIndex)}
+                        className="neo-button p-2 text-red-500 hover:text-red-600 text-base"
+                        title="Supprimer cette question"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
               </div>
             </div>
           )}

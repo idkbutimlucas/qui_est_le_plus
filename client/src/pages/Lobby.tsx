@@ -91,6 +91,7 @@ export default function Lobby() {
       updateSettings({
         numberOfQuestions,
         categories: newCategories,
+        questionTime: room?.settings.questionTime || 30,
       });
     }
   };
@@ -100,6 +101,7 @@ export default function Lobby() {
     updateSettings({
       numberOfQuestions: value,
       categories: selectedCategories,
+      questionTime: room?.settings.questionTime || 30,
     });
   };
 

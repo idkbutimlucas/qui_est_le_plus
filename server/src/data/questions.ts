@@ -187,9 +187,9 @@ export const adjectives: Record<Exclude<QuestionCategory, 'custom'>, string[]> =
 // Fonction pour générer des questions aléatoires
 export function getRandomQuestions(
   categories: QuestionCategory[],
-  count: number
-): Array<{ adjective: string; category: QuestionCategory }> {
-  const questions: Array<{ adjective: string; category: QuestionCategory }> = [];
+  count: number,
+  excludeAdjectives: string[] = []
+): { questions: Array<{ adjective: string; category: QuestionCategory }>; historyReset: boolean } {
   const availableAdjectives: Array<{ adjective: string; category: QuestionCategory }> = [];
 
   // Filtrer les catégories personnalisées
@@ -198,11 +198,33 @@ export function getRandomQuestions(
   // Collecter tous les adjectifs des catégories sélectionnées
   validCategories.forEach(category => {
     adjectives[category].forEach(adjective => {
-      availableAdjectives.push({ adjective, category });
+      // Exclure les adjectifs déjà utilisés
+      if (!excludeAdjectives.includes(adjective)) {
+        availableAdjectives.push({ adjective, category });
+      }
     });
   });
 
+  // Si pas assez de questions disponibles, réinitialiser l'historique
+  if (availableAdjectives.length < count) {
+    // On recommence à zéro en incluant toutes les questions
+    const allAdjectives: Array<{ adjective: string; category: QuestionCategory }> = [];
+    validCategories.forEach(category => {
+      adjectives[category].forEach(adjective => {
+        allAdjectives.push({ adjective, category });
+      });
+    });
+    const shuffled = allAdjectives.sort(() => Math.random() - 0.5);
+    return {
+      questions: shuffled.slice(0, Math.min(count, shuffled.length)),
+      historyReset: true
+    };
+  }
+
   // Mélanger et sélectionner
   const shuffled = availableAdjectives.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, shuffled.length));
+  return {
+    questions: shuffled.slice(0, Math.min(count, shuffled.length)),
+    historyReset: false
+  };
 }

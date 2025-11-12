@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { Room, Player, RoomSettings, Question, QuestionResult } from '../../shared/types.js';
+import { Room, Player, RoomSettings, Question, QuestionResult, CustomQuestion } from '../../shared/types.js';
 import { getRandomQuestions } from './data/questions.js';
 
 export class RoomManager {
@@ -7,7 +7,6 @@ export class RoomManager {
   private playerRooms: Map<string, string> = new Map(); // playerId -> roomCode
   private timers: Map<string, NodeJS.Timeout> = new Map(); // roomCode -> timer
   private timerCallbacks: Map<string, () => void> = new Map(); // roomCode -> callback pour l'expiration
-  private readonly QUESTION_TIMER = 15; // 15 secondes par question
 
   // Générer un code de room unique (4 caractères)
   private generateRoomCode(): string {
@@ -26,7 +25,7 @@ export class RoomManager {
     const room = this.rooms.get(roomCode);
     if (!room) return;
 
-    room.timeRemaining = this.QUESTION_TIMER;
+    room.timeRemaining = room.settings.questionTime;
 
     // Stocker le callback d'expiration
     this.timerCallbacks.set(roomCode, onExpired);
@@ -98,12 +97,14 @@ export class RoomManager {
       players: [host],
       settings: {
         numberOfQuestions: 10,
-        categories: ['classique']
+        categories: ['classique'],
+        questionTime: 30 // Durée par défaut: 30 secondes
       },
       currentQuestionIndex: 0,
       votes: {},
       results: [],
-      status: 'lobby'
+      status: 'lobby',
+      usedQuestions: [] // Historique des questions déjà posées
     };
 
     this.rooms.set(code, room);
@@ -288,11 +289,24 @@ export class RoomManager {
     room.votes = {};
     room.results = [];
 
-    // Générer les questions
-    const questionData = getRandomQuestions(
+    // Générer les questions en excluant celles déjà utilisées
+    const { questions: questionData, historyReset } = getRandomQuestions(
       room.settings.categories,
-      room.settings.numberOfQuestions
+      room.settings.numberOfQuestions,
+      room.usedQuestions
     );
+
+    // Si l'historique a été réinitialisé, effacer l'historique de la room
+    if (historyReset) {
+      room.usedQuestions = [];
+    }
+
+    // Ajouter les nouvelles questions à l'historique
+    questionData.forEach(q => {
+      if (!room.usedQuestions.includes(q.adjective)) {
+        room.usedQuestions.push(q.adjective);
+      }
+    });
 
     // Créer la première question
     const firstQuestionData = questionData[0];
@@ -329,7 +343,13 @@ export class RoomManager {
       return null;
     }
 
-    room.customQuestions.push(adjective);
+    // Créer la question avec l'ID du joueur
+    const customQuestion: CustomQuestion = {
+      adjective,
+      playerId
+    };
+
+    room.customQuestions.push(customQuestion);
     return room;
   }
 
@@ -367,11 +387,18 @@ export class RoomManager {
     room.votes = {};
     room.results = [];
 
-    // Créer les questions à partir des adjectifs personnalisés
-    const questionData = room.customQuestions.map(adjective => ({
-      adjective,
+    // Créer les questions à partir des questions personnalisées
+    const questionData = room.customQuestions.map(cq => ({
+      adjective: cq.adjective,
       category: 'custom' as const
     }));
+
+    // Ajouter les questions custom à l'historique
+    questionData.forEach(q => {
+      if (!room.usedQuestions.includes(q.adjective)) {
+        room.usedQuestions.push(q.adjective);
+      }
+    });
 
     // Créer la première question
     const firstQuestionData = questionData[0];
@@ -507,6 +534,7 @@ export class RoomManager {
     room.results = [];
     room.customQuestions = undefined;
     delete (room as any).allQuestions;
+    // Note: on ne réinitialise PAS usedQuestions pour garder l'historique entre les parties
 
     return room;
   }
