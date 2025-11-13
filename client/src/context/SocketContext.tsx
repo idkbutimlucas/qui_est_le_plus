@@ -76,7 +76,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     newSocket.on('game:question', (question: Question) => {
       setCurrentQuestion(question);
       setCurrentResult(null);
-      setTimeRemaining(15); // Réinitialiser le timer à 15 secondes
+      setTimeRemaining(null); // Le timer sera mis à jour par game:timerUpdate
       lastTickTime.current = null;
       playSound('whoosh');
     });

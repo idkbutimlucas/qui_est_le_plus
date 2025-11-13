@@ -30,6 +30,11 @@ export class RoomManager {
     // Stocker le callback d'expiration
     this.timerCallbacks.set(roomCode, onExpired);
 
+    // Envoyer immédiatement le premier tick avec le temps initial
+    if (onTick && room.timeRemaining !== undefined) {
+      onTick(room.timeRemaining);
+    }
+
     // Créer un intervalle qui se déclenche chaque seconde
     const timer = setInterval(() => {
       const room = this.rooms.get(roomCode);

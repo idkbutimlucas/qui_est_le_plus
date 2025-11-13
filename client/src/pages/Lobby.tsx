@@ -10,6 +10,7 @@ export default function Lobby() {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
+  const [questionTime, setQuestionTime] = useState(30);
   const [selectedCategories, setSelectedCategories] = useState<QuestionCategory[]>(['classique']);
   const [showCode, setShowCode] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -52,6 +53,7 @@ export default function Lobby() {
     }
 
     setNumberOfQuestions(room.settings.numberOfQuestions);
+    setQuestionTime(room.settings.questionTime);
     setSelectedCategories(room.settings.categories as QuestionCategory[]);
 
     // Restaurer l'état showCode depuis localStorage seulement une fois par code de room
@@ -91,7 +93,7 @@ export default function Lobby() {
       updateSettings({
         numberOfQuestions,
         categories: newCategories,
-        questionTime: room?.settings.questionTime || 30,
+        questionTime,
       });
     }
   };
@@ -101,7 +103,16 @@ export default function Lobby() {
     updateSettings({
       numberOfQuestions: value,
       categories: selectedCategories,
-      questionTime: room?.settings.questionTime || 30,
+      questionTime,
+    });
+  };
+
+  const handleQuestionTimeChange = (value: number) => {
+    setQuestionTime(value);
+    updateSettings({
+      numberOfQuestions,
+      categories: selectedCategories,
+      questionTime: value,
     });
   };
 
@@ -295,6 +306,38 @@ export default function Lobby() {
               ) : (
                 <div className="neo-pressed px-4 py-2 text-base font-semibold text-primary">
                   {numberOfQuestions} questions
+                </div>
+              )}
+            </div>
+
+            {/* Durée par question */}
+            <div className="mb-4 flex-shrink-0">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="neo-badge text-xs">
+                  Durée
+                </div>
+                <span className="text-2xl font-bold text-accent">{questionTime}s</span>
+              </div>
+              {isHost && showSettings ? (
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min="10"
+                    max="60"
+                    step="5"
+                    value={questionTime}
+                    onChange={(e) => handleQuestionTimeChange(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-secondary font-semibold">
+                    <span>10s</span>
+                    <span>30s</span>
+                    <span>60s</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="neo-pressed px-4 py-2 text-base font-semibold text-primary">
+                  {questionTime} secondes par question
                 </div>
               )}
             </div>
