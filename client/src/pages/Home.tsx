@@ -75,21 +75,22 @@ export default function Home() {
   };
 
   return (
-    <div className="neo-container flex items-center justify-center p-4 min-h-screen relative overflow-hidden">
+    <div className="neo-container min-h-screen relative overflow-y-auto overflow-x-hidden">
       {/* Formes décoratives organiques en arrière-plan */}
       <div className="fixed top-20 left-16 w-40 h-40 organic-shape-1 bg-accent opacity-10 animate-float-soft"></div>
       <div className="fixed bottom-32 right-24 w-32 h-32 organic-shape-2 bg-accent-secondary opacity-10 animate-pulse-soft" style={{ animationDelay: '1s' }}></div>
       <div className="fixed top-1/2 right-16 w-24 h-24 organic-shape-3 bg-accent opacity-10 animate-float-soft" style={{ animationDelay: '2s' }}></div>
 
-      <div className="max-w-md w-full relative z-10 animate-scale-in">
-        {/* Logo */}
-        <div className="text-center mb-12">
-          <div className="inline-block animate-float-soft">
-            <div className="neo-card p-6 organic-shape-1">
-              <img src="/logo.png" alt="Logo" className="w-32 h-32 mx-auto" />
+      <div className="flex justify-center p-4 py-12">
+        <div className="max-w-md w-full relative z-10 animate-scale-in">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <div className="inline-block animate-float-soft">
+              <div className="neo-card p-4 organic-shape-1">
+                <img src="/logo.png" alt="Logo" className="w-24 h-24 mx-auto" />
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Menu principal */}
         {mode === 'menu' && (
@@ -99,7 +100,7 @@ export default function Home() {
                 playSound('click');
                 setMode('create');
               }}
-              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
+              className="w-full neo-button-accent py-4 px-6 text-xl font-semibold text-white"
             >
               <div className="flex items-center justify-center gap-3">
                 <span className="text-2xl">✨</span>
@@ -111,7 +112,7 @@ export default function Home() {
                 playSound('click');
                 setMode('join');
               }}
-              className="w-full neo-button py-5 px-8 text-xl font-semibold text-primary"
+              className="w-full neo-button py-4 px-6 text-xl font-semibold text-primary"
             >
               <div className="flex items-center justify-center gap-3">
                 <span className="text-2xl">🎮</span>
@@ -123,7 +124,7 @@ export default function Home() {
 
         {/* Créer une room */}
         {mode === 'create' && (
-          <div className="neo-card p-8 space-y-6 animate-slide-in">
+          <div className="neo-card p-6 space-y-4 animate-slide-in">
             <button
               onClick={() => {
                 playSound('click');
@@ -176,7 +177,7 @@ export default function Home() {
                     />
                   </div>
                 )}
-                <label className="flex-1 neo-button px-6 py-4 text-center cursor-pointer text-primary font-semibold">
+                <label className="flex-1 neo-button px-4 py-3 text-center cursor-pointer text-primary font-semibold">
                   <span>{avatarPreview ? 'Changer' : 'Ajouter une photo'}</span>
                   <input
                     type="file"
@@ -191,7 +192,7 @@ export default function Home() {
             <button
               onClick={handleCreateRoom}
               disabled={!playerName.trim()}
-              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
+              className="w-full neo-button-accent py-4 px-6 text-xl font-semibold text-white"
             >
               Créer la partie
             </button>
@@ -200,7 +201,7 @@ export default function Home() {
 
         {/* Rejoindre une room */}
         {mode === 'join' && (
-          <div className="neo-card p-8 space-y-6 animate-slide-in">
+          <div className="neo-card p-6 space-y-4 animate-slide-in">
             <button
               onClick={() => {
                 playSound('click');
@@ -229,12 +230,12 @@ export default function Home() {
               <label className="block text-secondary font-semibold text-base">
                 Code de la partie
               </label>
-              <div className="neo-card p-6 text-center organic-shape-1">
+              <div className="neo-card p-4 text-center organic-shape-1">
                 <input
                   type="text"
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                  className="w-full bg-transparent text-center font-mono text-3xl font-bold text-accent focus:outline-none tracking-[0.3em]"
+                  className="w-full bg-transparent text-center font-mono text-2xl font-bold text-accent focus:outline-none tracking-[0.3em]"
                   placeholder="ABC123"
                   maxLength={6}
                   style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
@@ -270,7 +271,7 @@ export default function Home() {
                     />
                   </div>
                 )}
-                <label className="flex-1 neo-button px-6 py-4 text-center cursor-pointer text-primary font-semibold">
+                <label className="flex-1 neo-button px-4 py-3 text-center cursor-pointer text-primary font-semibold">
                   <span>{avatarPreview ? 'Changer' : 'Ajouter une photo'}</span>
                   <input
                     type="file"
@@ -285,12 +286,13 @@ export default function Home() {
             <button
               onClick={handleJoinRoom}
               disabled={!playerName.trim() || !roomCode.trim()}
-              className="w-full neo-button-accent py-5 px-8 text-xl font-semibold text-white"
+              className="w-full neo-button-accent py-4 px-6 text-xl font-semibold text-white"
             >
               Rejoindre
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
